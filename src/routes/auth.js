@@ -25,12 +25,3 @@ exports.facebook = {
     handler
   }
 }
-
-exports.twitter = {
-  method: 'GET',
-  path: '/auth/twitter',
-  config: {
-    auth: 'twitter',
-    handler
-  }
-}

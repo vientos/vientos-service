@@ -46,18 +46,6 @@ server.register([AuthCookie, Bell], (err) => {
     })
     server.route(AuthRoutes.facebook)
   }
-
-  if (process.env.TWITTER_CLIENT_ID && process.env.TWITTER_CLIENT_SECRET) {
-    server.auth.strategy('twitter', 'bell', {
-      provider: 'twitter',
-      password: COOKIE_PASSWORD,
-      clientId: process.env.TWITTER_CLIENT_ID,
-      clientSecret: process.env.TWITTER_CLIENT_SECRET,
-      location: process.env.CLIENT_DOMAIN,
-      isSecure: IS_SECURE
-    })
-    server.route(AuthRoutes.twitter)
-  }
 })
 
 server.start((err) => {
