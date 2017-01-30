@@ -8,7 +8,7 @@ function handler (request, reply) {
   reply(request.auth.credentials.profile)
 }
 
-exports.google = {
+module.exports.google = {
   method: 'GET',
   path: '/auth/google',
   config: {
@@ -17,7 +17,7 @@ exports.google = {
   }
 }
 
-exports.facebook = {
+module.exports.facebook = {
   method: 'GET',
   path: '/auth/facebook',
   config: {
