@@ -1,15 +1,31 @@
-var Mongoose = require('mongoose')
-var Schema = Mongoose.Schema
-var ObjectId = Mongoose.Schema.Types.ObjectId
+const Mongoose = require('mongoose')
+const ObjectId = Mongoose.Schema.Types.ObjectId
 
-// The data schema for an event that we're tracking in our analytics engine
-var personSchema = new Schema({
-  email: { type: String, required: true },
-  name: { type: String },
+const credentialSchema = new Mongoose.Schema({
+  id: { type: String },
+  email: { type: String },
+  provider: { type: String }
+})
+
+const personSchema = new Mongoose.Schema({
+  credentials: [credentialSchema],
   follows: [{ type: ObjectId, ref: 'Project' }]
 })
 
-// TODO change collection name to 'people'
-var Person = Mongoose.model('Person', personSchema, 'users')
+const Person = Mongoose.model('Person', personSchema, 'people')
+
+Person.prototype.hasCredentialWithId = function hasCredentialWithId (id) {
+  return this.credentials.find(credential => credential.id === id)
+}
+Person.prototype.addCredential = function addCredential (credential) {
+  this.credentials.push(credential)
+  return this.save()
+}
+
+Person.prototype.getProfile = function getProfile () {
+  return {
+    '_id': this._id
+  }
+}
 
 module.exports = Person

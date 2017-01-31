@@ -1,38 +1,33 @@
 const Hapi = require('hapi')
 const Bell = require('bell')
 const AuthCookie = require('hapi-auth-cookie')
-const AuthRoutes = require('./routes/auth')
-var mongoose = require('mongoose')
-mongoose.Promise = global.Promise
-
+const mongoose = require('mongoose')
 
 const PORT = process.env.HAPI_PORT || 3000
 const COOKIE_PASSWORD = process.env.COOKIE_PASSWORD || 'it-should-have-min-32-characters'
 const NODE_ENV = process.env.NODE_ENV || 'development'
 const MONGO_URL = process.env.MONGO_URL || 'mongodb://localhost:27017'
 
+mongoose.Promise = global.Promise
+mongoose.connect(MONGO_URL, { promiseLibrary: global.Promise })
+
 const server = new Hapi.Server()
 
-mongoose.connect(MONGO_URL)
-
 server.connection({
-  port: PORT
+  port: PORT,
+  routes: { cors: { credentials: true } },
+  state: { isSameSite: false } // requried for CORS
 })
 
-server.route(require('./routes/person'))
-
+const AuthRoutes = require('./routes/auth')
 server.register([AuthCookie, Bell], (err) => {
   if (err) throw err
 
   const IS_SECURE = NODE_ENV === 'production'
 
-  server.auth.strategy('session', 'cookie', false, {
+  server.auth.strategy('session', 'cookie', true, {
     password: COOKIE_PASSWORD,
-    isSecure: IS_SECURE,
-    validateFunc (request, session, callback) {
-      console.log('validateFunc',request.params)
-      return callback(null, true, {id: request.params.personId})
-    }
+    isSecure: IS_SECURE
   })
 
   if (process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET) {
@@ -58,7 +53,12 @@ server.register([AuthCookie, Bell], (err) => {
     })
     server.route(AuthRoutes.facebook)
   }
+
+  server.route(AuthRoutes.hello)
+  server.route(AuthRoutes.bye)
 })
+
+server.route(require('./routes/person'))
 
 server.start((err) => {
   if (err) throw err

@@ -1,4 +1,4 @@
-var Person = require('./../models/person')
+const Person = require('./../models/person')
 
 function follow (request, reply) {
   // TODO: change params.personId for auth.credentials.id

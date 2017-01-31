@@ -1,19 +1,12 @@
-const Boom = require('boom')
-
-function handler (request, reply) {
-  if (!request.auth.isAuthenticated) {
-    reply(Boom.unauthorized())
-  }
-
-  reply(request.auth.credentials.profile)
-}
+const Person = require('../models/person')
+const AuthController = require('../controllers/auth')
 
 module.exports.google = {
   method: 'GET',
   path: '/auth/google',
   config: {
     auth: 'google',
-    handler
+    handler: AuthController.oauth
   }
 }
 
@@ -22,6 +15,22 @@ module.exports.facebook = {
   path: '/auth/facebook',
   config: {
     auth: 'facebook',
-    handler
+    handler: AuthController.oauth
+  }
+}
+
+module.exports.hello = {
+  method: 'GET',
+  path: '/auth/hello',
+  config: {
+    handler: AuthController.hello
+  }
+}
+
+module.exports.bye = {
+  method: 'PUT',
+  path: '/auth/bye',
+  config: {
+    handler: AuthController.bye
   }
 }

@@ -1,10 +1,9 @@
-var Mongoose = require('mongoose')
-var Schema = Mongoose.Schema
+const Mongoose = require('mongoose')
 
-var projectSchema = new Schema({
+const projectSchema = new Mongoose.Schema({
   name: { type: String }
 })
 
-var Project = Mongoose.model('Project', projectSchema, 'projects')
+const Project = Mongoose.model('Project', projectSchema, 'projects')
 
 module.exports = Project
