@@ -1,4 +1,3 @@
-const Person = require('../models/person')
 const AuthController = require('../controllers/auth')
 
 module.exports.google = {

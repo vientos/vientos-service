@@ -23,9 +23,11 @@ Person.prototype.addCredential = function addCredential (credential) {
 }
 
 Person.prototype.getProfile = function getProfile () {
-  return {
-    '_id': this._id
+  let profile = {
+    '_id': this._id,
+    follows: this.follows
   }
+  return profile
 }
 
 module.exports = Person

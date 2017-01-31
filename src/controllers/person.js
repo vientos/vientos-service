@@ -1,21 +1,31 @@
 const Person = require('./../models/person')
 
+function inPersonalScope (request, reply) {
+  if (request.params.personId !== request.auth.credentials.id) {
+    reply().code(403)
+    return false
+  }
+  return true
+}
+
 function follow (request, reply) {
-  // TODO: change params.personId for auth.credentials.id
-  Person.findByIdAndUpdate(
-    request.params.personId,
-    {$addToSet: {follows: request.params.projectId}}
-  ).then(result => reply().code(204))
-  .catch(err => reply(err))
+  if (inPersonalScope(request, reply)) {
+    Person.findByIdAndUpdate(
+      request.auth.credentials.id,
+      { $addToSet: { follows: request.params.projectId } }
+    ).then(result => reply().code(204))
+    .catch(err => { throw err })
+  }
 }
 
 function unfollow (request, reply) {
-  // TODO: change params.personId for auth.credentials.id
-  Person.findByIdAndUpdate(
-    request.params.personId,
-    {$pull: {follows: request.params.projectId}}
-  ).then(result => reply().code(204))
-  .catch(err => reply(err))
+  if (inPersonalScope(request, reply)) {
+    Person.findByIdAndUpdate(
+      request.auth.credentials.id,
+      { $pull: { follows: request.params.projectId } }
+    ).then(result => reply().code(204))
+    .catch(err => { throw err })
+  }
 }
 
 module.exports = {

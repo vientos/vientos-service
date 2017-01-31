@@ -4,24 +4,16 @@ const Person = require('./../models/person')
 const PWA_URL = process.env.PWA_URL || 'http://localhost:8080'
 
 function hello (request, reply) {
-  if (request.auth.credentials.id) {
-    Person.findById(request.auth.credentials.id)
-      .then(person => {
-        if (!person) throw new Error('no person found based on cookie!')
-        reply(person.getProfile())
-      })
-  } else {
-    reply(Boom.unauthorized())
-  }
+  Person.findById(request.auth.credentials.id)
+    .then(person => {
+      if (!person) throw new Error('no person found based on cookie!')
+      reply(person.getProfile())
+    })
 }
 
 function bye (request, reply) {
-  if (request.auth.credentials) {
-    request.cookieAuth.clear()
-    reply().code(204)
-  } else {
-    reply(Boom.unauthorized())
-  }
+  request.cookieAuth.clear()
+  reply().code(204)
 }
 
 function oauth (request, reply) {
