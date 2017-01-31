@@ -36,7 +36,7 @@ server.register([AuthCookie, Bell], (err) => {
       password: COOKIE_PASSWORD,
       clientId: process.env.GOOGLE_CLIENT_ID,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-      location: process.env.CLIENT_DOMAIN,
+      location: process.env.OAUTH_CLIENT_DOMAIN,
       isSecure: IS_SECURE
     })
     server.route(AuthRoutes.google)
@@ -48,7 +48,7 @@ server.register([AuthCookie, Bell], (err) => {
       password: COOKIE_PASSWORD,
       clientId: process.env.FACEBOOK_CLIENT_ID,
       clientSecret: process.env.FACEBOOK_CLIENT_SECRET,
-      location: process.env.CLIENT_DOMAIN,
+      location: process.env.OAUTH_CLIENT_DOMAIN,
       isSecure: IS_SECURE
     })
     server.route(AuthRoutes.facebook)
