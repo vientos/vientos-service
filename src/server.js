@@ -60,6 +60,7 @@ server.register([AuthCookie, Bell], (err) => {
 
 server.route(require('./routes/person'))
 server.route(require('./routes/projects'))
+server.route(require('./routes/intents'))
 
 server.start((err) => {
   if (err) throw err
