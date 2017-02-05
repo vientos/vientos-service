@@ -59,6 +59,7 @@ server.register([AuthCookie, Bell], (err) => {
 })
 
 server.route(require('./routes/person'))
+server.route(require('./routes/projects'))
 
 server.start((err) => {
   if (err) throw err

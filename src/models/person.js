@@ -1,5 +1,4 @@
 const Mongoose = require('mongoose')
-const ObjectId = Mongoose.Schema.Types.ObjectId
 
 const credentialSchema = new Mongoose.Schema({
   id: { type: String },
@@ -9,7 +8,7 @@ const credentialSchema = new Mongoose.Schema({
 
 const personSchema = new Mongoose.Schema({
   credentials: [credentialSchema],
-  follows: [{ type: ObjectId, ref: 'Project' }]
+  follows: [{ type: Mongoose.Schema.Types.ObjectId, ref: 'Project' }]
 })
 
 const Person = Mongoose.model('Person', personSchema, 'people')
