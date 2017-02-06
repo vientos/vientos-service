@@ -15,7 +15,7 @@ const server = new Hapi.Server()
 
 server.connection({
   port: PORT,
-  routes: { cors: { credentials: true } },
+  routes: { cors: { credentials: true, exposedHeaders: ['location'] } },
   state: { isSameSite: false } // requried for CORS
 })
 
