@@ -1,4 +1,4 @@
-const PersonController = require('./../controllers/person.js')
+const PersonController = require('./../controllers/person')
 
 module.exports = [
   {

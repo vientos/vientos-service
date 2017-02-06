@@ -15,7 +15,7 @@ const server = new Hapi.Server()
 
 server.connection({
   port: PORT,
-  routes: { cors: { credentials: true } },
+  routes: { cors: { credentials: true, exposedHeaders: ['location'] } },
   state: { isSameSite: false } // requried for CORS
 })
 
@@ -59,6 +59,8 @@ server.register([AuthCookie, Bell], (err) => {
 })
 
 server.route(require('./routes/person'))
+server.route(require('./routes/projects'))
+server.route(require('./routes/intents'))
 
 server.start((err) => {
   if (err) throw err
