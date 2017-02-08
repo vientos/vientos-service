@@ -62,7 +62,12 @@ server.route(require('./routes/person'))
 server.route(require('./routes/projects'))
 server.route(require('./routes/intents'))
 
-server.start((err) => {
-  if (err) throw err
-  console.log('Server running at:', server.info.uri)
-})
+// don't start if required from other script
+if (!module.parent) {
+  server.start((err) => {
+    if (err) throw err
+    console.log('Server running at:', server.info.uri)
+  })
+}
+
+module.exports = server

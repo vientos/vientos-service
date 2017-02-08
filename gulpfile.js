@@ -1,5 +1,5 @@
-var gulp = require('gulp'),
-  server = require('gulp-develop-server')
+const gulp = require('gulp')
+const server = require('gulp-develop-server')
 
 gulp.task('default', ['server:start', 'server:restart'])
 
