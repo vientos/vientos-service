@@ -30,5 +30,12 @@ module.exports = [
     config: {
       handler: IntentsController.update
     }
+  },
+  {
+    method: 'DELETE',
+    path: '/intents/{intentId}',
+    config: {
+      handler: IntentsController.remove
+    }
   }
 ]
