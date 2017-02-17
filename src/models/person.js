@@ -7,6 +7,7 @@ const credentialSchema = new Mongoose.Schema({
 })
 
 const personSchema = new Mongoose.Schema({
+  name: { type: String },
   credentials: [credentialSchema],
   follows: [{ type: Mongoose.Schema.Types.ObjectId, ref: 'Project' }]
 })
@@ -24,6 +25,7 @@ Person.prototype.addCredential = function addCredential (credential) {
 Person.prototype.getProfile = function getProfile () {
   let profile = {
     '_id': this._id,
+    name: this.name,
     follows: this.follows
   }
   return profile
