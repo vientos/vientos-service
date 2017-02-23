@@ -1,5 +1,4 @@
 const Mongoose = require('mongoose')
-const ObjectId = Mongoose.Schema.Types.ObjectId
 
 const intentSchema = new Mongoose.Schema({
   projects: [{ type: Mongoose.Schema.Types.ObjectId, ref: 'Project' }],

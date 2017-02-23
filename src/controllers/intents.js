@@ -51,8 +51,8 @@ function update (request, reply) {
 }
 
 function remove (request, reply) {
-  Intent.remove({_id:request.params.intentId})
-    .then(() =>  reply().code(204))
+  Intent.remove({ _id: request.params.intentId })
+    .then(() => reply().code(204))
 }
 
 module.exports = {
