@@ -1,5 +1,8 @@
 # vientos-service
 
+[![Build Status](https://travis-ci.org/ehecame/vientos-service.svg?branch=master)](https://travis-ci.org/ehecame/vientos-service)
+[![codecov](https://codecov.io/gh/ehecame/vientos-service/branch/master/graph/badge.svg)](https://codecov.io/gh/ehecame/vientos-service)
+
 ## development
 
 ```shell
