@@ -1,6 +1,7 @@
 const Mongoose = require('mongoose')
 
 const intentSchema = new Mongoose.Schema({
+  _id: { type: String },
   projects: [{ type: Mongoose.Schema.Types.ObjectId, ref: 'Project' }],
   title: { type: String },
   description: { type: String },

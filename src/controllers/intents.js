@@ -17,35 +17,32 @@ function view (request, reply) {
     .then(intent => reply(intent))
 }
 
-function create (request, reply) {
-  canCreateOrUpdate(request.payload, request.auth.credentials.id)
-    .then(allowed => {
-      if (!allowed) {
-        reply(Boom.forbidden())
-        return null
-      } else {
-        return Intent.create(request.payload)
-      }
-    }).then(intent => {
-      if (intent) {
-        return reply().code(201).header('location', '/intents/' + intent._id)
-      }
-    })
-}
-
-function update (request, reply) {
+function save (request, reply) {
+  let existing
   Intent.findById(request.params.intentId)
-    .then(intent => canCreateOrUpdate(intent, request.auth.credentials.id))
-    .then(allowed => {
+    .then(intent => {
+      if (intent) {
+        existing = intent
+        // otherwise one could edit anyone elses existing intents
+        // by adding/replacing project in projects array
+        return canCreateOrUpdate(intent, request.auth.credentials.id)
+      } else {
+        return canCreateOrUpdate(request.payload, request.auth.credentials.id)
+      }
+    }).then(allowed => {
       if (!allowed) {
         reply(Boom.forbidden())
         return null
       } else {
-        return Intent.findByIdAndUpdate(request.params.intentId, request.payload)
+        if (existing) {
+          return Intent.findByIdAndUpdate(request.params.intentId, request.payload)
+        } else {
+          return Intent.create(request.payload)
+        }
       }
     }).then(intent => {
       if (intent) {
-        return reply().code(204)
+        return reply(intent)
       }
     })
 }
@@ -58,7 +55,6 @@ function remove (request, reply) {
 module.exports = {
   list,
   view,
-  create,
-  update,
+  save,
   remove
 }
