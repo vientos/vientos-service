@@ -6,9 +6,9 @@ const PWA_URL = process.env.PWA_URL || 'http://localhost:8080'
 function hello (request, reply) {
   Person.findById(request.auth.credentials.id)
     .then(person => {
-      if (!person) throw new Error('no person found based on cookie!')
+      if (!person) return new Error('no person found based on cookie!')
       reply(person.getProfile())
-    })
+    }).catch(err => { throw err })
 }
 
 function bye (request, reply) {

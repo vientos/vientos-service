@@ -10,19 +10,19 @@ function canCreateOrUpdate (intent, personId) {
 function list (request, reply) {
   Intent.find({})
     .then(intents => reply(intents))
+    .catch(err => { throw err })
 }
 
 function view (request, reply) {
   Intent.findById(request.params.intentId)
     .then(intent => reply(intent))
+    .catch(err => { throw err })
 }
 
 function save (request, reply) {
-  let existing
   Intent.findById(request.params.intentId)
     .then(intent => {
       if (intent) {
-        existing = intent
         // otherwise one could edit anyone elses existing intents
         // by adding/replacing project in projects array
         return canCreateOrUpdate(intent, request.auth.credentials.id)
@@ -34,22 +34,23 @@ function save (request, reply) {
         reply(Boom.forbidden())
         return null
       } else {
-        if (existing) {
-          return Intent.findByIdAndUpdate(request.params.intentId, request.payload)
-        } else {
-          return Intent.create(request.payload)
-        }
+        return Intent.findByIdAndUpdate(
+          request.params.intentId,
+          request.payload,
+          { new: true, upsert: true }
+        )
       }
     }).then(intent => {
       if (intent) {
         return reply(intent)
       }
-    })
+    }).catch(err => { throw err })
 }
 
 function remove (request, reply) {
   Intent.remove({ _id: request.params.intentId })
     .then(() => reply().code(204))
+    .catch(err => { throw err })
 }
 
 module.exports = {
