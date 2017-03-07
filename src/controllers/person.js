@@ -1,16 +1,22 @@
 const Boom = require('boom')
 const Person = require('./../models/person')
 
-function inPersonalScope (request, reply) {
-  if (request.payload.person !== request.auth.credentials.id) {
+function get (request, reply) {
+  if (request.params.id !== request.auth.credentials.id) {
     reply(Boom.forbidden())
-    return false
+  } else {
+    Person.findById(request.auth.credentials.id)
+      .then(person => {
+        if (!person) return new Error('no person found based on cookie!')
+        reply(person.getProfile())
+      }).catch(err => { throw err })
   }
-  return true
 }
 
 function follow (request, reply) {
-  if (inPersonalScope(request, reply)) {
+  if (request.payload.person !== request.auth.credentials.id) {
+    reply(Boom.forbidden())
+  } else {
     Person.findById(request.auth.credentials.id)
     .then(person => {
       // make sure not alraedy following
@@ -40,6 +46,7 @@ function unfollow (request, reply) {
 }
 
 module.exports = {
+  get,
   follow,
   unfollow
 }

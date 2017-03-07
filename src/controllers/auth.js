@@ -1,19 +1,11 @@
+const cuid = require('cuid')
 const Boom = require('boom')
 const Person = require('./../models/person')
 
 const PWA_URL = process.env.PWA_URL || 'http://localhost:8080'
 
 function hello (request, reply) {
-  Person.findById(request.auth.credentials.id)
-    .then(person => {
-      if (!person) return new Error('no person found based on cookie!')
-      reply(person.getProfile())
-    }).catch(err => { throw err })
-}
-
-function bye (request, reply) {
-  request.cookieAuth.clear()
-  reply().code(204)
+  reply().redirect('/sessions/' + request.auth.credentials.sessionId).code(303)
 }
 
 function oauth (request, reply) {
@@ -38,13 +30,12 @@ function oauth (request, reply) {
       return new Person({ credentials: [credential] }).save()
     }
   }).then(person => {
-    request.cookieAuth.set({ id: person._id })
+    request.cookieAuth.set({ id: person._id, sessionId: cuid() })
     reply().redirect(PWA_URL)
   })
 }
 
 module.exports = {
   hello,
-  bye,
   oauth
 }

@@ -16,7 +16,7 @@ const server = new Hapi.Server()
 server.connection({
   port: PORT,
   routes: { cors: { credentials: true, exposedHeaders: ['location'] } },
-  state: { isSameSite: false } // requried for CORS
+  state: { isSameSite: false } // required for CORS
 })
 
 const AuthRoutes = require('./routes/auth')
@@ -55,7 +55,7 @@ server.register([AuthCookie, Bell], (err) => {
   }
 
   server.route(AuthRoutes.hello)
-  server.route(AuthRoutes.bye)
+  server.route(require('./routes/sessions'))
 })
 
 server.route(require('./routes/person'))

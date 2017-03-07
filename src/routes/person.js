@@ -2,6 +2,13 @@ const PersonController = require('./../controllers/person')
 
 module.exports = [
   {
+    method: 'GET',
+    path: '/people/{id}',
+    config: {
+      handler: PersonController.get
+    }
+  },
+  {
     method: 'PUT',
     path: '/followings/{id}',
     config: {
