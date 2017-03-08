@@ -10,8 +10,9 @@ function inPersonalScope (request, reply) {
 
 function get (request, reply) {
   if (inPersonalScope(request, reply)) {
+    let prefix = process.env.OAUTH_CLIENT_DOMAIN + '/sessions/'
     reply({
-      _id: request.auth.credentials.sessionId,
+      _id: prefix + request.auth.credentials.sessionId,
       type: 'Session',
       person: request.auth.credentials.id
     })
