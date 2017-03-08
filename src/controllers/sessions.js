@@ -12,6 +12,7 @@ function get (request, reply) {
   if (inPersonalScope(request, reply)) {
     reply({
       _id: request.auth.credentials.sessionId,
+      type: 'Session',
       person: request.auth.credentials.id
     })
   }

@@ -2,6 +2,7 @@ const Mongoose = require('mongoose')
 
 const projectSchema = new Mongoose.Schema({
   _id: { type: String },
+  type: { type: String },
   name: { type: String },
   // TODO turn into subdocuments like followings
   admins: [{ type: String, ref: 'Person' }]

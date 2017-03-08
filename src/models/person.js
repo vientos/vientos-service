@@ -2,6 +2,7 @@ const Mongoose = require('mongoose')
 
 const credentialSchema = new Mongoose.Schema({
   _id: { type: String },
+  type: { type: String },
   // TODO: rename to providerId
   id: { type: String },
   email: { type: String },
@@ -10,12 +11,14 @@ const credentialSchema = new Mongoose.Schema({
 
 const followingSchema = new Mongoose.Schema({
   _id: { type: String },
+  type: { type: String },
   person: { type: String, ref: 'Person' },
   project: { type: String, ref: 'Project' }
 })
 
 const personSchema = new Mongoose.Schema({
   _id: { type: String },
+  type: { type: String },
   name: { type: String },
   credentials: [credentialSchema],
   followings: [followingSchema]
