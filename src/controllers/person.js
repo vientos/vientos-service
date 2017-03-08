@@ -1,8 +1,10 @@
 const Boom = require('boom')
 const Person = require('./../models/person')
+const ns = process.env.OAUTH_CLIENT_DOMAIN + '/people/'
+const followingsNs = process.env.OAUTH_CLIENT_DOMAIN + '/followings/'
 
 function get (request, reply) {
-  if (request.params.id !== request.auth.credentials.id) {
+  if (ns + request.params.id !== request.auth.credentials.id) {
     reply(Boom.forbidden())
   } else {
     Person.findById(request.auth.credentials.id)
@@ -29,7 +31,7 @@ function follow (request, reply) {
       }
     }).then(person => {
       if (person) {
-        reply(person.followings.id(request.params.id))
+        reply(person.followings.id(request.payload._id))
       }
     }).catch(err => { throw err })
   }
@@ -39,7 +41,7 @@ function unfollow (request, reply) {
   // TODO: 403 if attempted to remove someone else's following
   Person.findById(request.auth.credentials.id)
   .then(person => {
-    person.followings.id(request.params.id).remove()
+    person.followings.id(followingsNs + request.params.id).remove()
     return person.save()
   }).then(result => reply().code(204))
   .catch(err => { throw err })

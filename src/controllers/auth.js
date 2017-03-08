@@ -30,7 +30,9 @@ function oauth (request, reply) {
       return new Person({ credentials: [credential] }).save()
     }
   }).then(person => {
-    request.cookieAuth.set({ id: person._id, sessionId: cuid() })
+    request.cookieAuth.set({
+      id: process.env.OAUTH_CLIENT_DOMAIN + '/' + person._id,
+      sessionId: cuid() })
     reply().redirect(PWA_URL)
   })
 }
