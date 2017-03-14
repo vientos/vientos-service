@@ -18,17 +18,10 @@ module.exports = [
     }
   },
   {
-    method: 'POST',
-    path: '/intents',
-    config: {
-      handler: IntentsController.create
-    }
-  },
-  {
     method: 'PUT',
     path: '/intents/{intentId}',
     config: {
-      handler: IntentsController.update
+      handler: IntentsController.save
     }
   },
   {

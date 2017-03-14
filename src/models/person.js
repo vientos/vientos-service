@@ -1,15 +1,27 @@
 const Mongoose = require('mongoose')
 
 const credentialSchema = new Mongoose.Schema({
+  _id: { type: String },
+  type: { type: String },
+  // TODO: rename to providerId
   id: { type: String },
   email: { type: String },
   provider: { type: String }
 })
 
+const followingSchema = new Mongoose.Schema({
+  _id: { type: String },
+  type: { type: String },
+  person: { type: String, ref: 'Person' },
+  project: { type: String, ref: 'Project' }
+})
+
 const personSchema = new Mongoose.Schema({
+  _id: { type: String },
+  type: { type: String },
   name: { type: String },
   credentials: [credentialSchema],
-  follows: [{ type: Mongoose.Schema.Types.ObjectId, ref: 'Project' }]
+  followings: [followingSchema]
 })
 
 const Person = Mongoose.model('Person', personSchema, 'people')
@@ -26,7 +38,7 @@ Person.prototype.getProfile = function getProfile () {
   let profile = {
     _id: this._id,
     name: this.name,
-    follows: this.follows
+    followings: this.followings
   }
   return profile
 }

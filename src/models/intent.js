@@ -1,7 +1,9 @@
 const Mongoose = require('mongoose')
 
 const intentSchema = new Mongoose.Schema({
-  projects: [{ type: Mongoose.Schema.Types.ObjectId, ref: 'Project' }],
+  _id: { type: String },
+  type: { type: String },
+  projects: [{ type: String, ref: 'Project' }],
   title: { type: String },
   description: { type: String },
   status: { type: String, default: 'active' },

@@ -25,11 +25,3 @@ module.exports.hello = {
     handler: AuthController.hello
   }
 }
-
-module.exports.bye = {
-  method: 'PUT',
-  path: '/auth/bye',
-  config: {
-    handler: AuthController.bye
-  }
-}

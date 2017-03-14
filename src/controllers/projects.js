@@ -1,5 +1,6 @@
 const Boom = require('boom')
 const Project = require('./../models/project')
+const ns = process.env.OAUTH_CLIENT_DOMAIN + '/projects/'
 
 function list (request, reply) {
   Project.find({})
@@ -7,10 +8,11 @@ function list (request, reply) {
 }
 
 function view (request, reply) {
-  Project.findById(request.params.projectId)
+  Project.findById(ns + request.params.projectId)
     .then(project => reply(project))
 }
 
+// FIXME: merge with update as save
 function create (request, reply) {
   Project.create({
     name: request.payload.name,
@@ -21,7 +23,7 @@ function create (request, reply) {
 }
 
 function update (request, reply) {
-  Project.findById(request.params.projectId)
+  Project.findById(ns + request.params.projectId)
     .then(project => {
       if (!project.admins.find(personId => {
         return personId.equals(request.auth.credentials.id)
