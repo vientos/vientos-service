@@ -18,17 +18,10 @@ module.exports = [
     }
   },
   {
-    method: 'POST',
-    path: '/projects',
-    config: {
-      handler: ProjectsController.create
-    }
-  },
-  {
     method: 'PUT',
     path: '/projects/{projectId}',
     config: {
-      handler: ProjectsController.update
+      handler: ProjectsController.save
     }
   }
 ]
