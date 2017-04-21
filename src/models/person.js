@@ -21,6 +21,7 @@ const personSchema = new Mongoose.Schema({
   type: { type: String },
   name: { type: String },
   credentials: [credentialSchema],
+  categories: [{ type: String }],
   followings: [followingSchema]
 })
 

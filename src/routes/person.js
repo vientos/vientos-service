@@ -10,6 +10,13 @@ module.exports = [
   },
   {
     method: 'PUT',
+    path: '/people/{id}',
+    config: {
+      handler: PersonController.save
+    }
+  },
+  {
+    method: 'PUT',
     path: '/followings/{id}',
     config: {
       handler: PersonController.follow

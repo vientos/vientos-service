@@ -15,6 +15,32 @@ function get (request, reply) {
   }
 }
 
+function save (request, reply) {
+  Person.findById(ns + request.params.id)
+    .then(person => {
+      if (person) {
+        return request.auth.credentials.id === person._id
+      } else {
+        return false
+      }
+    }).then(allowed => {
+      if (!allowed) {
+        reply(Boom.forbidden())
+        return null
+      } else {
+        return Person.findByIdAndUpdate(
+          ns + request.params.id,
+          request.payload,
+          { new: true, upsert: true }
+        )
+      }
+    }).then(person => {
+      if (person) {
+        return reply(person)
+      }
+    }).catch(err => { throw err })
+}
+
 function follow (request, reply) {
   if (request.payload.person !== request.auth.credentials.id) {
     reply(Boom.forbidden())
@@ -49,6 +75,7 @@ function unfollow (request, reply) {
 
 module.exports = {
   get,
+  save,
   follow,
   unfollow
 }
