@@ -9,7 +9,8 @@ const intentSchema = new Mongoose.Schema({
   status: { type: String, default: 'active' },
   direction: { type: String }, // offer || request
   collaborationType: { type: String },
-  condition: { type: String }
+  condition: { type: String },
+  expiryDate: { type: String }
 })
 
 const Intent = Mongoose.model('Intent', intentSchema, 'intents')
