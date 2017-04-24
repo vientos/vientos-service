@@ -8,7 +8,8 @@ const intentSchema = new Mongoose.Schema({
   description: { type: String },
   status: { type: String, default: 'active' },
   direction: { type: String }, // offer || request
-  collaborationType: { type: String } // TODO: ref ?
+  collaborationType: { type: String },
+  condition: { type: String }
 })
 
 const Intent = Mongoose.model('Intent', intentSchema, 'intents')
