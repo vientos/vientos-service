@@ -36,7 +36,7 @@ function save (request, reply) {
       }
     }).then(person => {
       if (person) {
-        return reply(person)
+        return reply(person.getProfile())
       }
     }).catch(err => { throw err })
 }

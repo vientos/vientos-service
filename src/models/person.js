@@ -39,7 +39,8 @@ Person.prototype.getProfile = function getProfile () {
   let profile = {
     _id: this._id,
     name: this.name,
-    followings: this.followings
+    followings: this.followings,
+    categories: this.categories
   }
   return profile
 }
