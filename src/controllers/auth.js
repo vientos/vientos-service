@@ -34,7 +34,7 @@ function oauth (request, reply) {
     }
   }).then(person => {
     request.cookieAuth.set({
-      id: process.env.OAUTH_CLIENT_DOMAIN + '/' + person._id,
+      id: person._id,
       sessionId: cuid() })
     reply().redirect(PWA_URL)
   })
