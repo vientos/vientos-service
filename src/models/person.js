@@ -20,6 +20,7 @@ const personSchema = new Mongoose.Schema({
   _id: { type: String },
   type: { type: String },
   name: { type: String },
+  logo: { type: String },
   credentials: [credentialSchema],
   categories: [{ type: String }],
   followings: [followingSchema]
@@ -35,10 +36,13 @@ Person.prototype.addCredential = function addCredential (credential) {
   return this.save()
 }
 
+// needed not to leak credentials
 Person.prototype.getProfile = function getProfile () {
   let profile = {
     _id: this._id,
+    type: this.type,
     name: this.name,
+    logo: this.logo,
     followings: this.followings,
     categories: this.categories
   }

@@ -10,6 +10,7 @@ function get (request, reply) {
     Person.findById(request.auth.credentials.id)
       .then(person => {
         if (!person) return new Error('no person found based on cookie!')
+        // getProfile() needed not to leak credentials
         reply(person.getProfile())
       }).catch(err => { throw err })
   }
@@ -36,6 +37,7 @@ function save (request, reply) {
       }
     }).then(person => {
       if (person) {
+        // getProfile() needed not to leak credentials
         return reply(person.getProfile())
       }
     }).catch(err => { throw err })
