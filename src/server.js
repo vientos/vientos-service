@@ -61,6 +61,7 @@ server.register([AuthCookie, Bell], (err) => {
 server.route(require('./routes/person'))
 server.route(require('./routes/projects'))
 server.route(require('./routes/intents'))
+server.route(require('./routes/conversations'))
 
 // don't start if required from other script
 if (!module.parent) {
