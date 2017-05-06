@@ -21,9 +21,16 @@ const intentSchema = new Mongoose.Schema({
   collaborationType: { type: String },
   condition: { type: String },
   expiryDate: { type: String },
-  locations: [placeSchema]
+  locations: [placeSchema],
+  openConversations: [{ type: String }]
 })
 
 const Intent = Mongoose.model('Intent', intentSchema, 'intents')
+
+Intent.prototype.addOpenConversation = function addOpenConversation (conversation) {
+  if (!this.openConversations) this.openConversations = []
+  this.openConversations.push(conversation._id)
+  return this.save()
+}
 
 module.exports = Intent
