@@ -43,10 +43,8 @@ function addMessage (request, reply) {
         .then(allowed => {
           if (!allowed) return reply(Boom.forbidden())
           conversation.messages.push(request.payload)
-          conversation.save()
-            .then(updated => reply(updated.messages.find(message => message._id === request.payload._id)))
-        }
-      )
+          return conversation.save()
+        }).then(updated => reply(updated.messages.find(message => message._id === request.payload._id)))
     })
     .catch(err => { throw err })
 }
