@@ -14,8 +14,7 @@ function view (request, reply) {
           else reply(Boom.forbidden())
         }
       )
-    })
-    .catch(err => { throw err })
+    }).catch(err => { throw err })
 }
 
 // TODO optimize when loooots of conversations
@@ -36,22 +35,36 @@ function create (request, reply) {
 }
 
 function addMessage (request, reply) {
-  Conversation.findById(ns + request.payload.conversation)
+  if (request.payload.creator !== request.auth.credentials.id) return reply(Boom.badData())
+  Conversation.findById(request.payload.conversation)
     .then(conversation => {
       if (!conversation) return reply(Boom.badData())
       conversation.canEngage(request.auth.credentials.id)
         .then(allowed => {
           if (!allowed) return reply(Boom.forbidden())
-          conversation.messages.push(request.payload)
-          return conversation.save()
-        }).then(updated => reply(updated.messages.find(message => message._id === request.payload._id)))
-    })
-    .catch(err => { throw err })
+          return conversation.addMessage(request.payload)
+        }).then(message => reply(message))
+    }).catch(err => { throw err })
+}
+
+function addReview (request, reply) {
+  if (request.payload.creator !== request.auth.credentials.id) return reply(Boom.badData())
+  Conversation.findById(request.payload.conversation)
+    .then(conversation => {
+      if (!conversation) return reply(Boom.badData())
+      conversation.canEngage(request.auth.credentials.id)
+        .then(allowed => {
+          if (!allowed) return reply(Boom.forbidden())
+          // TODO make sure not already reviewed
+          return conversation.addReview(request.payload)
+        }).then(review => reply(review))
+    }).catch(err => { throw err })
 }
 
 module.exports = {
   view,
   mine,
   create,
-  addMessage
+  addMessage,
+  addReview
 }

@@ -28,5 +28,12 @@ module.exports = [
     config: {
       handler: ConversationsController.addMessage
     }
+  },
+  {
+    method: 'PUT',
+    path: '/reviews/{id}',
+    config: {
+      handler: ConversationsController.addReview
+    }
   }
 ]

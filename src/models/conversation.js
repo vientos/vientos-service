@@ -11,6 +11,16 @@ const messageSchema = new Mongoose.Schema({
   conversation: { type: String }
 })
 
+const reviewSchema = new Mongoose.Schema({
+  _id: { type: String },
+  type: { type: String },
+  creator: { type: String },
+  as: { type: String },
+  body: { type: String },
+  createdAt: { type: Date, default: Date.now },
+  conversation: { type: String }
+})
+
 const conversationSchema = new Mongoose.Schema({
   _id: { type: String },
   type: { type: String },
@@ -18,7 +28,7 @@ const conversationSchema = new Mongoose.Schema({
   creator: { type: String },
   causingIntent: { type: String, ref: 'Intent' },
   matchingIntent: { type: String, ref: 'Intent' },
-  status: { type: String }
+  reviews: [reviewSchema]
 })
 
 const Conversation = Mongoose.model('Conversation', conversationSchema, 'conversations')
@@ -47,6 +57,25 @@ Conversation.createAndAddBacklinks = function createAndAddBacklinks (payload) {
     }).then(() => newConversation)
 }
 
+Conversation.prototype.addMessage = function addMessage (payload) {
+  this.messages.push(payload)
+  return this.save()
+    .then(conversation => {
+      return this.messages.find(message => message._id === payload._id)
+    })
+}
+
+Conversation.prototype.addReview = function addReview (payload) {
+  // TODO: also check if admin of the matchingIntent
+  this.reviews.push(payload)
+  return this.save()
+    .then(conversation => {
+      // TODO handle when matchingIntent admin but not creator
+      // in case of person not creator but admin of projects from both intents this won't work
+      return this.reviews.find(review => review.creator === payload.creator)
+    })
+}
+
 Conversation.prototype.loadRelatedIntents = function loadRelatedIntents () {
   let intentIds = [this.causingIntent]
   if (this.matchingIntent) intentIds.push(this.matchingIntent)
@@ -55,11 +84,10 @@ Conversation.prototype.loadRelatedIntents = function loadRelatedIntents () {
 
 Conversation.prototype.canEngage = function canEngage (personId) {
   // im creator
-  if (this.creator === personId) return true
+  if (this.creator === personId) return Promise.resolve(true)
   // I admin causing or matching intent
   return this.loadRelatedIntents()
     .then(intents => {
-      console.log(intents)
       if (intents.some(intent => intent.admins.includes(personId))) return true
       else {
         // I admin a project associeated with causing or matching intent
@@ -68,7 +96,6 @@ Conversation.prototype.canEngage = function canEngage (personId) {
         }, [])
         return Project.find({_id: {$in: projectIds}})
           .then(projects => {
-            console.log(projects)
             return projects.some(project => project.admins.includes(personId))
           }
         )

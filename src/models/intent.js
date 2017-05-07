@@ -13,6 +13,7 @@ const intentSchema = new Mongoose.Schema({
   projects: [{ type: String, ref: 'Project' }],
   title: { type: String },
   description: { type: String },
+  question: { type: String },
   logo: { type: String },
   admins: [{ type: String }],
   creator: { type: String },
