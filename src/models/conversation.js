@@ -21,6 +21,13 @@ const reviewSchema = new Mongoose.Schema({
   conversation: { type: String }
 })
 
+const collaborationSchema = new Mongoose.Schema({
+  _id: { type: String },
+  type: { type: String },
+  body: { type: String },
+  conversation: { type: String }
+})
+
 const conversationSchema = new Mongoose.Schema({
   _id: { type: String },
   type: { type: String },
@@ -28,7 +35,8 @@ const conversationSchema = new Mongoose.Schema({
   creator: { type: String },
   causingIntent: { type: String, ref: 'Intent' },
   matchingIntent: { type: String, ref: 'Intent' },
-  reviews: [reviewSchema]
+  reviews: [reviewSchema],
+  collaboration: collaborationSchema
 })
 
 const Conversation = Mongoose.model('Conversation', conversationSchema, 'conversations')
@@ -61,18 +69,25 @@ Conversation.prototype.addMessage = function addMessage (payload) {
   this.messages.push(payload)
   return this.save()
     .then(conversation => {
-      return this.messages.find(message => message._id === payload._id)
+      return conversation.messages.find(message => message._id === payload._id)
     })
 }
 
+// TODO Copy/Reuse from pwa canReview()
 Conversation.prototype.addReview = function addReview (payload) {
-  // TODO: also check if admin of the matchingIntent
+  // TODO: also check if admin of the matchingIntent // there can be only two reviews
   this.reviews.push(payload)
   return this.save()
     .then(conversation => {
-      // TODO handle when matchingIntent admin but not creator
-      // in case of person not creator but admin of projects from both intents this won't work
-      return this.reviews.find(review => review.creator === payload.creator)
+      return conversation.reviews.find(review => review.creator === payload.creator)
+    })
+}
+
+Conversation.prototype.saveCollaboration = function saveCollaboration (payload) {
+  this.collaboration = payload
+  return this.save()
+    .then(conversation => {
+      return conversation.collaboration
     })
 }
 

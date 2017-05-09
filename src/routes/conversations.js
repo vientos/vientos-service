@@ -35,5 +35,12 @@ module.exports = [
     config: {
       handler: ConversationsController.addReview
     }
+  },
+  {
+    method: 'PUT',
+    path: '/collaborations/{id}',
+    config: {
+      handler: ConversationsController.saveCollaboration
+    }
   }
 ]

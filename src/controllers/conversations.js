@@ -61,10 +61,25 @@ function addReview (request, reply) {
     }).catch(err => { throw err })
 }
 
+function saveCollaboration (request, reply) {
+  Conversation.findById(request.payload.conversation)
+    .then(conversation => {
+      if (!conversation) return reply(Boom.badData())
+      if (conversation.reviews.length > 0) return reply(Boom.illegal())
+      conversation.canEngage(request.auth.credentials.id)
+        .then(allowed => {
+          if (!allowed) return reply(Boom.forbidden())
+          // TODO make sure not already reviewed
+          return conversation.saveCollaboration(request.payload)
+        }).then(collaboration => reply(collaboration))
+    }).catch(err => { throw err })
+}
+
 module.exports = {
   view,
   mine,
   create,
   addMessage,
-  addReview
+  addReview,
+  saveCollaboration
 }
