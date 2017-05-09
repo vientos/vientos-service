@@ -9,6 +9,14 @@ module.exports = [
     }
   },
   {
+    method: 'GET',
+    path: '/people',
+    config: {
+      handler: PersonController.list,
+      auth: false
+    }
+  },
+  {
     method: 'PUT',
     path: '/people/{id}',
     config: {

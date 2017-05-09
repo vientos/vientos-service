@@ -38,7 +38,7 @@ Person.prototype.addCredential = function addCredential (credential) {
 
 // needed not to leak credentials
 Person.prototype.getProfile = function getProfile () {
-  let profile = {
+  return {
     _id: this._id,
     type: this.type,
     name: this.name,
@@ -46,7 +46,15 @@ Person.prototype.getProfile = function getProfile () {
     followings: this.followings,
     categories: this.categories
   }
-  return profile
+}
+
+Person.prototype.getPublicProfile = function getPublicProfile () {
+  return {
+    _id: this._id,
+    type: this.type,
+    name: this.name,
+    logo: this.logo
+  }
 }
 
 module.exports = Person

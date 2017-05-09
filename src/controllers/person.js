@@ -16,6 +16,12 @@ function get (request, reply) {
   }
 }
 
+function list (request, reply) {
+  Person.find({})
+    .then(people => reply(people.map(person => person.getPublicProfile())))
+    .catch(err => { throw err })
+}
+
 function save (request, reply) {
   Person.findById(ns + request.params.id)
     .then(person => {
@@ -77,6 +83,7 @@ function unfollow (request, reply) {
 
 module.exports = {
   get,
+  list,
   save,
   follow,
   unfollow
