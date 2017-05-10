@@ -3,6 +3,7 @@ const Conversation = require('./../models/conversation')
 
 const ns = process.env.OAUTH_CLIENT_DOMAIN + '/conversations/'
 const peopleNs = process.env.OAUTH_CLIENT_DOMAIN + '/people/'
+const collaborationsNs = process.env.OAUTH_CLIENT_DOMAIN + '/collaborations/'
 
 function view (request, reply) {
   Conversation.findById(ns + request.params.id)
@@ -75,11 +76,25 @@ function saveCollaboration (request, reply) {
     }).catch(err => { throw err })
 }
 
+function removeCollaboration (request, reply) {
+  Conversation.findOne({ 'collaboration._id': collaborationsNs + request.params.id })
+    .then(conversation => {
+      if (!conversation) return reply(Boom.badData())
+      if (conversation.reviews.length > 0) return reply(Boom.illegal())
+      conversation.canEngage(request.auth.credentials.id)
+        .then(allowed => {
+          if (!allowed) return reply(Boom.forbidden())
+          return conversation.removeCollaboration(request.payload)
+        }).then(() => reply().code(204))
+    }).catch(err => { throw err })
+}
+
 module.exports = {
   view,
   mine,
   create,
   addMessage,
   addReview,
-  saveCollaboration
+  saveCollaboration,
+  removeCollaboration
 }

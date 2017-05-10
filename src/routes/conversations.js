@@ -42,5 +42,12 @@ module.exports = [
     config: {
       handler: ConversationsController.saveCollaboration
     }
+  },
+  {
+    method: 'DELETE',
+    path: '/collaborations/{id}',
+    config: {
+      handler: ConversationsController.removeCollaboration
+    }
   }
 ]

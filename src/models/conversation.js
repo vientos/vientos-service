@@ -91,6 +91,11 @@ Conversation.prototype.saveCollaboration = function saveCollaboration (payload) 
     })
 }
 
+Conversation.prototype.removeCollaboration = function removeCollaboration (payload) {
+  this.collaboration.remove()
+  return this.save()
+}
+
 Conversation.prototype.loadRelatedIntents = function loadRelatedIntents () {
   let intentIds = [this.causingIntent]
   if (this.matchingIntent) intentIds.push(this.matchingIntent)
