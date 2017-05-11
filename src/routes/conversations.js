@@ -30,10 +30,26 @@ module.exports = [
     }
   },
   {
+    method: 'GET',
+    path: '/reviews',
+    config: {
+      handler: ConversationsController.listReviews,
+      auth: false
+    }
+  },
+  {
     method: 'PUT',
     path: '/reviews/{id}',
     config: {
       handler: ConversationsController.addReview
+    }
+  },
+  {
+    method: 'GET',
+    path: '/collaborations',
+    config: {
+      handler: ConversationsController.listCollaborations,
+      auth: false
     }
   },
   {

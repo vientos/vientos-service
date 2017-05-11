@@ -18,7 +18,8 @@ const reviewSchema = new Mongoose.Schema({
   as: { type: String },
   body: { type: String },
   createdAt: { type: Date, default: Date.now },
-  conversation: { type: String }
+  conversation: { type: String },
+  collaboration: { type: String }
 })
 
 const collaborationSchema = new Mongoose.Schema({
@@ -77,9 +78,19 @@ Conversation.prototype.addMessage = function addMessage (payload) {
 Conversation.prototype.addReview = function addReview (payload) {
   // TODO: also check if admin of the matchingIntent // there can be only two reviews
   this.reviews.push(payload)
+  let updatedConversation
   return this.save()
     .then(conversation => {
-      return conversation.reviews.find(review => review.creator === payload.creator)
+      updatedConversation = conversation
+      if (updatedConversation.reviews.length === 1) {
+        return this.loadRelatedIntents()
+      } else {
+        return []
+      }
+    }).then(intents => {
+      return Promise.all(intents.map(intent => intent.handleConversationEnding(updatedConversation)))
+    }).then(() => {
+      return updatedConversation.reviews.find(review => review.creator === payload.creator)
     })
 }
 

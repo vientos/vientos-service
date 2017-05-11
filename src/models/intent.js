@@ -23,7 +23,9 @@ const intentSchema = new Mongoose.Schema({
   condition: { type: String },
   expiryDate: { type: String },
   locations: [placeSchema],
-  openConversations: [{ type: String }]
+  openConversations: [{ type: String }],
+  abortedConversations: [{ type: String }],
+  collaborations: [{ type: String }]
 })
 
 const Intent = Mongoose.model('Intent', intentSchema, 'intents')
@@ -31,6 +33,18 @@ const Intent = Mongoose.model('Intent', intentSchema, 'intents')
 Intent.prototype.addOpenConversation = function addOpenConversation (conversation) {
   if (!this.openConversations) this.openConversations = []
   this.openConversations.push(conversation._id)
+  return this.save()
+}
+
+Intent.prototype.handleConversationEnding = function handleConversationEnding (conversation) {
+  if (conversation.collaboration) {
+    if (!this.collaborations) this.collaborations = []
+    this.collaborations.push(conversation.collaboration._id)
+  } else {
+    if (!this.abortedConversations) this.abortedConversations = []
+    this.abortedConversations.push(conversation._id)
+  }
+  this.openConversations = this.openConversations.filter(conversationId => conversationId !== conversation._id)
   return this.save()
 }
 

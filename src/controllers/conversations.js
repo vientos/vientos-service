@@ -26,6 +26,26 @@ function mine (request, reply) {
     .catch(err => { throw err })
 }
 
+function listCollaborations (request, reply) {
+  Conversation.find({})
+    .then(conversations => {
+      let collaborations = conversations.filter(conversation => {
+        return conversation.collaboration
+      }).map(conversation => conversation.collaboration)
+      reply(collaborations)
+    }).catch(err => { throw err })
+}
+
+function listReviews (request, reply) {
+  Conversation.find({})
+    .then(conversations => {
+      let reviews = conversations.reduce((acc, conversation) => {
+        return acc.concat(conversation.reviews)
+      }, [])
+      reply(reviews)
+    }).catch(err => { throw err })
+}
+
 // TODO if open conversation with same creator, cousing and matching intent, dont
 // TODO check if causing and matching exist and are active, in the db
 function create (request, reply) {
@@ -94,7 +114,9 @@ module.exports = {
   mine,
   create,
   addMessage,
+  listReviews,
   addReview,
+  listCollaborations,
   saveCollaboration,
   removeCollaboration
 }
