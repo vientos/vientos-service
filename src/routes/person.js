@@ -36,5 +36,19 @@ module.exports = [
     config: {
       handler: PersonController.unfollow
     }
+  },
+  {
+    method: 'PUT',
+    path: '/favorings/{id}',
+    config: {
+      handler: PersonController.favor
+    }
+  },
+  {
+    method: 'DELETE',
+    path: '/favorings/{id}',
+    config: {
+      handler: PersonController.unfavor
+    }
   }
 ]

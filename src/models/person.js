@@ -16,6 +16,13 @@ const followingSchema = new Mongoose.Schema({
   project: { type: String, ref: 'Project' }
 })
 
+const favoringSchema = new Mongoose.Schema({
+  _id: { type: String },
+  type: { type: String },
+  person: { type: String, ref: 'Person' },
+  intent: { type: String, ref: 'Intent' }
+})
+
 const personSchema = new Mongoose.Schema({
   _id: { type: String },
   type: { type: String },
@@ -23,7 +30,8 @@ const personSchema = new Mongoose.Schema({
   logo: { type: String },
   credentials: [credentialSchema],
   categories: [{ type: String }],
-  followings: [followingSchema]
+  followings: [followingSchema],
+  favorings: [favoringSchema]
 })
 
 const Person = Mongoose.model('Person', personSchema, 'people')
@@ -44,6 +52,7 @@ Person.prototype.getProfile = function getProfile () {
     name: this.name,
     logo: this.logo,
     followings: this.followings,
+    favorings: this.favorings,
     categories: this.categories
   }
 }
