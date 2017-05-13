@@ -1,46 +1,9 @@
 const Mongoose = require('mongoose')
+const schema = require('./schemas').conversation
 const Project = require('./project')
 const Intent = require('./intent')
 
-const messageSchema = new Mongoose.Schema({
-  _id: { type: String },
-  type: { type: String },
-  creator: { type: String },
-  body: { type: String },
-  createdAt: { type: Date, default: Date.now },
-  conversation: { type: String }
-})
-
-const reviewSchema = new Mongoose.Schema({
-  _id: { type: String },
-  type: { type: String },
-  creator: { type: String },
-  as: { type: String },
-  body: { type: String },
-  createdAt: { type: Date, default: Date.now },
-  conversation: { type: String },
-  collaboration: { type: String }
-})
-
-const collaborationSchema = new Mongoose.Schema({
-  _id: { type: String },
-  type: { type: String },
-  body: { type: String },
-  conversation: { type: String }
-})
-
-const conversationSchema = new Mongoose.Schema({
-  _id: { type: String },
-  type: { type: String },
-  messages: [messageSchema],
-  creator: { type: String },
-  causingIntent: { type: String, ref: 'Intent' },
-  matchingIntent: { type: String, ref: 'Intent' },
-  reviews: [reviewSchema],
-  collaboration: collaborationSchema
-})
-
-const Conversation = Mongoose.model('Conversation', conversationSchema, 'conversations')
+const Conversation = Mongoose.model('Conversation', schema, 'conversations')
 
 Conversation.findByPersonCanEngage = function findByPersonCanEngage (personId) {
   let all

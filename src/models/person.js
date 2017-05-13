@@ -1,40 +1,7 @@
 const Mongoose = require('mongoose')
+const schema = require('./schemas').person
 
-const credentialSchema = new Mongoose.Schema({
-  _id: { type: String },
-  type: { type: String },
-  // TODO: rename to providerId
-  id: { type: String },
-  email: { type: String },
-  provider: { type: String }
-})
-
-const followingSchema = new Mongoose.Schema({
-  _id: { type: String },
-  type: { type: String },
-  person: { type: String, ref: 'Person' },
-  project: { type: String, ref: 'Project' }
-})
-
-const favoringSchema = new Mongoose.Schema({
-  _id: { type: String },
-  type: { type: String },
-  person: { type: String, ref: 'Person' },
-  intent: { type: String, ref: 'Intent' }
-})
-
-const personSchema = new Mongoose.Schema({
-  _id: { type: String },
-  type: { type: String },
-  name: { type: String },
-  logo: { type: String },
-  credentials: [credentialSchema],
-  categories: [{ type: String }],
-  followings: [followingSchema],
-  favorings: [favoringSchema]
-})
-
-const Person = Mongoose.model('Person', personSchema, 'people')
+const Person = Mongoose.model('Person', schema, 'people')
 
 Person.prototype.hasCredentialWithId = function hasCredentialWithId (id) {
   return this.credentials.find(credential => credential.id === id)
