@@ -1,8 +1,14 @@
+const fs = require('fs')
 const Hapi = require('hapi')
+const http2 = require('http2')
 const Bell = require('bell')
 const AuthCookie = require('hapi-auth-cookie')
 const mongoose = require('mongoose')
 
+const httpServerOptions = {
+  key: fs.readFileSync(process.env.TLS_KEY_PATH),
+  cert: fs.readFileSync(process.env.TLS_CERT_PATH)
+}
 const PORT = process.env.HAPI_PORT || 3000
 const COOKIE_PASSWORD = process.env.COOKIE_PASSWORD || 'it-should-have-min-32-characters'
 const NODE_ENV = process.env.NODE_ENV || 'development'
@@ -16,7 +22,8 @@ const server = new Hapi.Server()
 server.connection({
   port: PORT,
   routes: { cors: { credentials: true, exposedHeaders: ['location'] } },
-  state: { isSameSite: false } // required for CORS
+  state: { isSameSite: false }, // required for CORS
+  listener: http2.createServer(httpServerOptions)
 })
 
 const AuthRoutes = require('./routes/auth')
