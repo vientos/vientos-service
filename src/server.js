@@ -5,9 +5,10 @@ const Bell = require('bell')
 const AuthCookie = require('hapi-auth-cookie')
 const mongoose = require('mongoose')
 
-const httpServerOptions = {
-  key: fs.readFileSync(process.env.TLS_KEY_PATH),
-  cert: fs.readFileSync(process.env.TLS_CERT_PATH)
+const httpServerOptions = {}
+if (process.env.TLS_KEY_PATH && process.env.TLS_CERT_PATH) {
+  httpServerOptions.key = fs.readFileSync(process.env.TLS_KEY_PATH)
+  httpServerOptions.cert = fs.readFileSync(process.env.TLS_CERT_PATH)
 }
 const PORT = process.env.HAPI_PORT || 3000
 const COOKIE_PASSWORD = process.env.COOKIE_PASSWORD || 'it-should-have-min-32-characters'
@@ -19,12 +20,15 @@ mongoose.connect(MONGO_URL, { promiseLibrary: global.Promise })
 
 const server = new Hapi.Server()
 
-server.connection({
+const connectionOptions = {
   port: PORT,
   routes: { cors: { credentials: true, exposedHeaders: ['location'] } },
-  state: { isSameSite: false }, // required for CORS
-  listener: http2.createServer(httpServerOptions)
-})
+  state: { isSameSite: false } // required for CORS
+}
+if (httpServerOptions.key && httpServerOptions.cert) {
+  connectionOptions.listener = http2.createServer(httpServerOptions)
+}
+server.connection(connectionOptions)
 
 const AuthRoutes = require('./routes/auth')
 server.register([AuthCookie, Bell], (err) => {
