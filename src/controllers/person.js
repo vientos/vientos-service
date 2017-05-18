@@ -89,7 +89,7 @@ function favor (request, reply) {
     Person.findById(request.auth.credentials.id)
     .then(person => {
       // make sure not alraedy favoring
-      if (person.favorings.find(el => el.project === request.payload.project)) {
+      if (person.favorings.find(el => el.intent === request.payload.intent)) {
         reply(Boom.conflict())
         return null
       } else {
