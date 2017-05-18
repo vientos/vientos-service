@@ -1,3 +1,4 @@
+const crypto = require('crypto')
 const cuid = require('cuid')
 const Boom = require('boom')
 const Person = require('./../models/person')
@@ -12,6 +13,7 @@ function oauth (request, reply) {
   if (!request.auth.isAuthenticated) {
     reply(Boom.unauthorized())
   }
+  let name = request.auth.credentials.profile.displayName
   let credential = {
     id: request.auth.credentials.profile.id,
     email: request.auth.credentials.profile.email,
@@ -29,6 +31,8 @@ function oauth (request, reply) {
     } else {
       return new Person({
         _id: process.env.OAUTH_CLIENT_DOMAIN + '/people/' + cuid(),
+        name,
+        logo: 'https://robohash.org/' + crypto.createHash('md5').update(credential.email).digest('hex'),
         credentials: [credential]
       }).save()
     }
