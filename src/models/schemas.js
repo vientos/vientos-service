@@ -66,6 +66,14 @@ const favoring = new Mongoose.Schema({
   intent: { type: String, ref: 'Intent' }
 })
 
+const subscription = new Mongoose.Schema({
+  _id: { type: String },
+  type: { type: String, default: 'Subscription' },
+  person: { type: String, ref: 'Person' },
+  endpoint: { type: String },
+  keys: { type: Object }
+})
+
 const person = new Mongoose.Schema({
   _id: { type: String },
   type: { type: String, default: 'Person' },
@@ -74,7 +82,8 @@ const person = new Mongoose.Schema({
   categories: [{ type: String }],
   credentials: [credential],
   followings: [following],
-  favorings: [favoring]
+  favorings: [favoring],
+  subscriptions: [subscription]
 })
 
 const message = new Mongoose.Schema({

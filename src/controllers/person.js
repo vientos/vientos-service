@@ -114,6 +114,28 @@ function unfavor (request, reply) {
   .catch(err => { throw err })
 }
 
+function subscribe (request, reply) {
+  if (request.payload.person !== request.auth.credentials.id) {
+    reply(Boom.forbidden())
+  } else {
+    Person.findById(request.auth.credentials.id)
+    .then(person => {
+      // make sure not alraedy subscribed
+      if (person.subscriptions.find(el => el.endpoint === request.payload.endpoint)) {
+        reply(Boom.conflict())
+        return null
+      } else {
+        person.subscriptions.push(request.payload)
+        return person.save()
+      }
+    }).then(person => {
+      if (person) {
+        reply(person.subscriptions.id(request.payload._id))
+      }
+    }).catch(err => { throw err })
+  }
+}
+
 module.exports = {
   get,
   list,
@@ -121,5 +143,6 @@ module.exports = {
   follow,
   unfollow,
   favor,
-  unfavor
+  unfavor,
+  subscribe
 }

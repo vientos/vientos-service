@@ -50,5 +50,12 @@ module.exports = [
     config: {
       handler: PersonController.unfavor
     }
+  },
+  {
+    method: 'PUT',
+    path: '/subscriptions/{id}',
+    config: {
+      handler: PersonController.subscribe
+    }
   }
 ]

@@ -1,11 +1,26 @@
 const Mongoose = require('mongoose')
+const Person = require('./person')
 const schema = require('./schemas').intent
 
 const Intent = Mongoose.model('Intent', schema, 'intents')
 
+Intent.prototype.notifyAdmins = function notifyAdmins (conversation) {
+  return Person.find({_id: {$in: this.admins}})
+   .then(admins => {
+     admins.forEach(admin => {
+       if (admin._id === conversation.creator) return
+       admin.notify({
+         body: 'New conversation started',
+         iri: conversation._id
+       })
+     })
+   })
+}
+
 Intent.prototype.addOpenConversation = function addOpenConversation (conversation) {
   if (!this.openConversations) this.openConversations = []
   this.openConversations.push(conversation._id)
+  this.notifyAdmins(conversation)
   return this.save()
 }
 

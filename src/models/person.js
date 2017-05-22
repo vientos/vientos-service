@@ -1,5 +1,8 @@
 const Mongoose = require('mongoose')
+const webpush = require('web-push')
 const schema = require('./schemas').person
+
+webpush.setGCMAPIKey(process.env.GCM_API_KEY)
 
 const Person = Mongoose.model('Person', schema, 'people')
 
@@ -31,6 +34,12 @@ Person.prototype.getPublicProfile = function getPublicProfile () {
     name: this.name,
     logo: this.logo
   }
+}
+
+Person.prototype.notify = function (data) {
+  this.subscriptions.forEach(subscription => {
+    webpush.sendNotification(subscription, JSON.stringify(data))
+  })
 }
 
 module.exports = Person
