@@ -1,10 +1,12 @@
 const Mongoose = require('mongoose')
 
 const place = new Mongoose.Schema({
+  _id: { type: String },
   type: { type: String, default: 'Place' },
   address: { type: String },
   latitude: { type: Number },
-  longitude: { type: Number }
+  longitude: { type: Number },
+  googlePlaceId: { type: String }
 })
 
 const project = new Mongoose.Schema({
@@ -16,8 +18,7 @@ const project = new Mongoose.Schema({
   links: [{ type: String }],
   contacts: [{ type: String }],
   categories: [{ type: String }],
-  locations: [place],
-  // TODO turn into subdocuments like followings
+  locations: [{ type: String, ref: 'Place' }],
   admins: [{ type: String, ref: 'Person' }]
 })
 
@@ -34,9 +35,8 @@ const intent = new Mongoose.Schema({
   condition: { type: String },
   expiryDate: { type: String },
   creator: { type: String, ref: 'Person' },
-  locations: [place],
+  locations: [{ type: String, ref: 'Place' }],
   projects: [{ type: String, ref: 'Project' }],
-  // TODO turn into subdocuments like followings
   admins: [{ type: String, ref: 'Person' }],
   openConversations: [{ type: String, ref: 'Conversation' }],
   abortedConversations: [{ type: String, ref: 'Conversation' }],

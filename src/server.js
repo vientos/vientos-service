@@ -73,6 +73,7 @@ server.route(require('./routes/person'))
 server.route(require('./routes/projects'))
 server.route(require('./routes/intents'))
 server.route(require('./routes/conversations'))
+server.route(require('./routes/places'))
 
 // don't start if required from other script
 if (!module.parent) {
