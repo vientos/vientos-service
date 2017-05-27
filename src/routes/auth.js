@@ -18,6 +18,15 @@ module.exports.facebook = {
   }
 }
 
+module.exports.vientos = {
+  method: 'GET',
+  path: '/auth/vientos',
+  config: {
+    auth: 'vientos',
+    handler: AuthController.oauth
+  }
+}
+
 module.exports.hello = {
   method: 'GET',
   path: '/auth/hello',

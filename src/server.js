@@ -2,6 +2,7 @@ const Hapi = require('hapi')
 const Bell = require('bell')
 const AuthCookie = require('hapi-auth-cookie')
 const mongoose = require('mongoose')
+const vientosProvider = require('./vientosProvider')
 
 const PORT = process.env.HAPI_PORT || 3000
 const COOKIE_PASSWORD = process.env.COOKIE_PASSWORD || 'it-should-have-min-32-characters'
@@ -52,6 +53,20 @@ server.register([AuthCookie, Bell], (err) => {
       isSecure: IS_SECURE
     })
     server.route(AuthRoutes.facebook)
+  }
+
+  if (process.env.VIENTOS_CLIENT_ID && process.env.VIENTOS_CLIENT_SECRET) {
+    server.auth.strategy('vientos', 'bell', {
+      provider: vientosProvider({
+        vientosIdpUrl: 'http://localhost:4000'
+      }),
+      password: COOKIE_PASSWORD,
+      clientId: process.env.VIENTOS_CLIENT_ID,
+      clientSecret: process.env.VIENTOS_CLIENT_SECRET,
+      location: process.env.OAUTH_CLIENT_DOMAIN,
+      isSecure: IS_SECURE
+    })
+    server.route(AuthRoutes.vientos)
   }
 
   server.route(AuthRoutes.hello)
