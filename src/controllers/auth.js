@@ -27,7 +27,7 @@ function oauth (request, reply) {
         return person.addCredential(credential)
       }
     } else {
-      return new Person({ credentials: [credential] }).save()
+      return new Person({ _id: cuid(), credentials: [credential] }).save()
     }
   }).then(person => {
     request.cookieAuth.set({
