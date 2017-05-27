@@ -66,10 +66,12 @@ server.register([AuthCookie, Bell], (err) => {
     server.route(AuthRoutes.facebook)
   }
 
-  if (process.env.VIENTOS_CLIENT_ID && process.env.VIENTOS_CLIENT_SECRET) {
+  if (process.env.VIENTOS_IDP_URL &&
+      process.env.VIENTOS_CLIENT_ID &&
+      process.env.VIENTOS_CLIENT_SECRET) {
     server.auth.strategy('vientos', 'bell', {
       provider: vientosProvider({
-        vientosIdpUrl: 'http://localhost:4000'
+        vientosIdpUrl: process.env.VIENTOS_IDP_URL
       }),
       password: COOKIE_PASSWORD,
       clientId: process.env.VIENTOS_CLIENT_ID,
