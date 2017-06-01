@@ -1,6 +1,7 @@
 const Mongoose = require('mongoose')
 const schema = require('./schemas').conversation
 const Project = require('./project')
+const Person = require('./person')
 const Intent = require('./intent')
 
 const Conversation = Mongoose.model('Conversation', schema, 'conversations')
@@ -29,12 +30,24 @@ Conversation.createAndAddBacklinks = function createAndAddBacklinks (payload) {
     }).then(() => newConversation)
 }
 
+Conversation.prototype.notifyCreator = function notifyCreator (message) {
+  Person.findById(this.creator)
+    .then(person => {
+      person.notify(this, message)
+    })
+}
+
 Conversation.prototype.addMessage = function addMessage (payload) {
   this.messages.push(payload)
+  let message
   return this.save()
     .then(conversation => {
-      return conversation.messages.find(message => message._id === payload._id)
-    })
+      message = this.messages.find(message => message._id === payload._id)
+      if (message.creator !== conversation.creator) conversation.notifyCreator(message)
+      return conversation.loadRelatedIntents()
+    }).then(intents => {
+      intents.forEach(intent => intent.notifyAdmins(this, message))
+    }).then(() => message)
 }
 
 // TODO Copy/Reuse from pwa canReview()

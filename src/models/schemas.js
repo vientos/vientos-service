@@ -124,10 +124,21 @@ const conversation = new Mongoose.Schema({
   reviews: [review]
 })
 
+const notification = new Mongoose.Schema({
+  _id: { type: String },
+  type: { type: String, default: 'Notification' },
+  for: { type: String, ref: 'Person' },
+  object: { type: String, ref: 'Conversation' },
+  cause: { type: String, ref: 'Message' },
+  active: { type: Boolean, default: true },
+  createdAt: { type: Date, default: Date.now }
+})
+
 module.exports = {
   project,
   place,
   intent,
   person,
-  conversation
+  conversation,
+  notification
 }

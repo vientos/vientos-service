@@ -1,6 +1,9 @@
 const Mongoose = require('mongoose')
 const webpush = require('web-push')
+const cuid = require('cuid')
 const schema = require('./schemas').person
+
+const Notification = require('./notification')
 
 webpush.setGCMAPIKey(process.env.GCM_API_KEY)
 
@@ -36,9 +39,30 @@ Person.prototype.getPublicProfile = function getPublicProfile () {
   }
 }
 
-Person.prototype.notify = function (data) {
+Person.prototype.notify = function (conversation, message) {
+  let notification = new Notification({
+    // FIXME define all namespaces in single place
+    _id: process.env.OAUTH_CLIENT_DOMAIN + '/notifications/' + cuid(),
+    for: this._id,
+    object: conversation._id
+  })
+  if (message) notification.cause = message._id
+  notification.save()
+    .catch(err => console.log(err))
+  if (this.subscriptions.length) {
+    // FIXME i18n
+    let body = message ? 'New message' : 'New conversation started'
+    this.sendPushNotification({
+      body,
+      iri: conversation._id
+    })
+  }
+}
+
+Person.prototype.sendPushNotification = function sendPushNotification (data) {
   this.subscriptions.forEach(subscription => {
     webpush.sendNotification(subscription, JSON.stringify(data))
+      .catch(err => console.log(err))
   })
 }
 
