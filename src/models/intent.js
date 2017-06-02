@@ -22,9 +22,15 @@ Intent.prototype.addOpenConversation = function addOpenConversation (conversatio
 }
 
 Intent.prototype.handleConversationEnding = function handleConversationEnding (conversation) {
-  if (conversation.collaboration) {
-    if (!this.collaborations) this.collaborations = []
-    this.collaborations.push(conversation.collaboration._id)
+  // FIXME: currently will send 'New conversation'
+  this.notifyAdmins(conversation)
+  let success = conversation.reviews.some(review => review.success)
+  // if (conversation.collaboration) {
+  if (success) {
+    // if (!this.collaborations) this.collaborations = []
+    // this.collaborations.push(conversation.collaboration._id)
+    if (!this.successfulConversations) this.successfulConversations = []
+    this.successfulConversations.push(conversation._id)
   } else {
     if (!this.abortedConversations) this.abortedConversations = []
     this.abortedConversations.push(conversation._id)

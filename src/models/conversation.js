@@ -54,10 +54,13 @@ Conversation.prototype.addMessage = function addMessage (payload) {
 Conversation.prototype.addReview = function addReview (payload) {
   // TODO: also check if admin of the matchingIntent // there can be only two reviews
   this.reviews.push(payload)
+  let review
   let updatedConversation
   return this.save()
     .then(conversation => {
       updatedConversation = conversation
+      review = updatedConversation.reviews.find(review => review.creator === payload.creator)
+      if (review.creator !== conversation.creator) conversation.notifyCreator(review)
       if (updatedConversation.reviews.length === 1) {
         return this.loadRelatedIntents()
       } else {
@@ -66,7 +69,7 @@ Conversation.prototype.addReview = function addReview (payload) {
     }).then(intents => {
       return Promise.all(intents.map(intent => intent.handleConversationEnding(updatedConversation)))
     }).then(() => {
-      return updatedConversation.reviews.find(review => review.creator === payload.creator)
+      return review
     })
 }
 

@@ -40,7 +40,8 @@ const intent = new Mongoose.Schema({
   admins: [{ type: String, ref: 'Person' }],
   openConversations: [{ type: String, ref: 'Conversation' }],
   abortedConversations: [{ type: String, ref: 'Conversation' }],
-  collaborations: [{ type: String, ref: 'Collaboration' }]
+  successfulConversations: [{ type: String, ref: 'Conversation' }]
+  // collaborations: [{ type: String, ref: 'Collaboration' }]
 })
 
 const credential = new Mongoose.Schema({
@@ -103,7 +104,8 @@ const review = new Mongoose.Schema({
   createdAt: { type: Date, default: Date.now },
   creator: { type: String, ref: 'Person' },
   conversation: { type: String, ref: 'Conversation' },
-  collaboration: { type: String, ref: 'Collaboration' }
+  // collaboration: { type: String, ref: 'Collaboration' }
+  success: { type: Boolean, default: false }
 })
 
 const collaboration = new Mongoose.Schema({
