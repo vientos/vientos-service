@@ -91,6 +91,7 @@ const message = new Mongoose.Schema({
   _id: { type: String },
   type: { type: String, default: 'Message' },
   body: { type: String },
+  ourTurn: { type: Boolean },
   createdAt: { type: Date, default: Date.now },
   creator: { type: String, ref: 'Person' },
   conversation: { type: String, ref: 'Conversation' }
