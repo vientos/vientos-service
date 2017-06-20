@@ -83,7 +83,7 @@ Person.prototype.sendEmailNotification = function sendEmailNotification (notific
     FromEmail: FROM_EMAIL,
     Recipients: [{ Email: this.credentials[0].email }],
     Subject: 'Vientos - ' + subjectForNotification(notification, message),
-    // FIXME don't hardcode it here
+    // TODO: decuple from app
     'Text-part': process.env.PWA_URL + '/conversation/' +
       notification.object.split('/').pop()
   }

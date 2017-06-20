@@ -40,7 +40,8 @@ function oauth (request, reply) {
     request.cookieAuth.set({
       id: person._id,
       sessionId: cuid() })
-    reply().redirect(PWA_URL)
+    // TODO: decuple from app
+    reply().redirect(PWA_URL + '/me')
   })
 }
 
