@@ -67,7 +67,7 @@ Conversation.prototype.addReview = function addReview (payload) {
         return []
       }
     }).then(intents => {
-      return Promise.all(intents.map(intent => intent.handleConversationEnding(updatedConversation)))
+      return Promise.all(intents.map(intent => intent.handleConversationEnding(updatedConversation, review)))
     }).then(() => {
       return review
     })

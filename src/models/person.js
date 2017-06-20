@@ -2,6 +2,11 @@ const Mongoose = require('mongoose')
 const webpush = require('web-push')
 const cuid = require('cuid')
 const schema = require('./schemas').person
+const Mailjet = require('node-mailjet').connect(
+  process.env.MAILJET_APIKEY_PUBLIC,
+  process.env.MAILJET_APIKEY_SECRET
+)
+const FROM_EMAIL = process.env.FROM_EMAIL
 
 const Notification = require('./notification')
 
@@ -39,6 +44,12 @@ Person.prototype.getPublicProfile = function getPublicProfile () {
   }
 }
 
+// FIXME i18n and handle new review
+function subjectForNotification (notification, message) {
+  if (!notification.cause) return 'New conversation started'
+  return message.type === 'Message' ? 'New message' : 'New review'
+}
+
 Person.prototype.notify = function (conversation, message) {
   let notification = new Notification({
     // FIXME define all namespaces in single place
@@ -50,13 +61,14 @@ Person.prototype.notify = function (conversation, message) {
   notification.save()
     .catch(err => console.log(err))
   if (this.subscriptions.length) {
-    // FIXME i18n
-    let body = message ? 'New message' : 'New conversation started'
+    let body = subjectForNotification(notification, message)
     this.sendPushNotification({
       body,
       iri: conversation._id
     })
   }
+  // TODO: check if email notifications on in settings
+  this.sendEmailNotification(notification, message)
 }
 
 Person.prototype.sendPushNotification = function sendPushNotification (data) {
@@ -64,6 +76,18 @@ Person.prototype.sendPushNotification = function sendPushNotification (data) {
     webpush.sendNotification(subscription, JSON.stringify(data))
       .catch(err => console.log(err))
   })
+}
+
+Person.prototype.sendEmailNotification = function sendEmailNotification (notification, message) {
+  const emailData = {
+    FromEmail: FROM_EMAIL,
+    Recipients: [{ Email: this.credentials[0].email }],
+    Subject: 'Vientos - ' + subjectForNotification(notification, message),
+    // FIXME don't hardcode it here
+    'Text-part': process.env.PWA_URL + '/conversation/' +
+      notification.object.split('/').pop()
+  }
+  return Mailjet.post('send').request(emailData)
 }
 
 module.exports = Person

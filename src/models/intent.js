@@ -21,10 +21,10 @@ Intent.prototype.addOpenConversation = function addOpenConversation (conversatio
   return this.save()
 }
 
-Intent.prototype.handleConversationEnding = function handleConversationEnding (conversation) {
+Intent.prototype.handleConversationEnding = function handleConversationEnding (conversation, review) {
   // FIXME: currently will send 'New conversation'
-  this.notifyAdmins(conversation)
-  let success = conversation.reviews.some(review => review.success)
+  this.notifyAdmins(conversation, review)
+  let success = review.success
   // if (conversation.collaboration) {
   if (success) {
     // if (!this.collaborations) this.collaborations = []
