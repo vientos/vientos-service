@@ -32,8 +32,8 @@ const intent = new Mongoose.Schema({
   logo: { type: String },
   status: { type: String, default: 'active' },
   direction: { type: String }, // offer || request
-  collaborationType: { type: String },
-  condition: { type: String },
+  collaborationType: { type: String }, // work || usage || consumption || ownership
+  reciprocity: { type: String }, // gift || barter, time-exchange, trade
   expiryDate: { type: String },
   createdAt: { type: Date, default: Date.now },
   creator: { type: String, ref: 'Person' },
