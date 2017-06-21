@@ -15,6 +15,7 @@ const project = new Mongoose.Schema({
   name: { type: String },
   description: { type: String },
   logo: { type: String },
+  createdAt: { type: Date, default: Date.now },
   links: [{ type: String }],
   contacts: [{ type: String }],
   categories: [{ type: String }],
@@ -34,6 +35,7 @@ const intent = new Mongoose.Schema({
   collaborationType: { type: String },
   condition: { type: String },
   expiryDate: { type: String },
+  createdAt: { type: Date, default: Date.now },
   creator: { type: String, ref: 'Person' },
   locations: [{ type: String, ref: 'Place' }],
   projects: [{ type: String, ref: 'Project' }],
@@ -138,10 +140,17 @@ const notification = new Mongoose.Schema({
 })
 
 module.exports = {
-  project,
   place,
+  project,
   intent,
+  credential,
+  following,
+  favoring,
+  subscription,
   person,
+  message,
+  review,
+  collaboration,
   conversation,
   notification
 }

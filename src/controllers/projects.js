@@ -8,12 +8,15 @@ function canCreateOrUpdate (project, personId) {
 
 function list (request, reply) {
   Project.find({})
+    .sort({ createdAt: -1 })
     .then(projects => reply(projects))
+    .catch(err => { throw err })
 }
 
 function view (request, reply) {
   Project.findById(ns + request.params.projectId)
     .then(project => reply(project))
+    .catch(err => { throw err })
 }
 
 // TODO refactor make dry with intents save
@@ -36,7 +39,7 @@ function save (request, reply) {
         return Project.findByIdAndUpdate(
           ns + request.params.projectId,
           request.payload,
-          { new: true, upsert: true }
+          { new: true, upsert: true, setDefaultsOnInsert: true }
         )
       }
     }).then(project => {

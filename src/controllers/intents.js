@@ -11,6 +11,7 @@ function canCreateOrUpdate (intent, personId) {
 
 function list (request, reply) {
   Intent.find({})
+    .sort({ createdAt: -1 })
     .then(intents => reply(intents))
     .catch(err => { throw err })
 }
@@ -39,7 +40,7 @@ function save (request, reply) {
         return Intent.findByIdAndUpdate(
           ns + request.params.intentId,
           request.payload,
-          { new: true, upsert: true }
+          { new: true, upsert: true, setDefaultsOnInsert: true }
         )
       }
     }).then(intent => {
