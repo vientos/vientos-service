@@ -1,5 +1,6 @@
 const Boom = require('boom')
 const Person = require('./../models/person')
+
 const ns = process.env.OAUTH_CLIENT_DOMAIN + '/people/'
 const followingsNs = process.env.OAUTH_CLIENT_DOMAIN + '/followings/'
 const favoringsNs = process.env.OAUTH_CLIENT_DOMAIN + '/favorings/'
@@ -11,8 +12,7 @@ function get (request, reply) {
     Person.findById(request.auth.credentials.id)
       .then(person => {
         if (!person) return new Error('no person found based on cookie!')
-        // getProfile() needed not to leak credentials
-        reply(person.getProfile())
+        reply(person)
       }).catch(err => { throw err })
   }
 }

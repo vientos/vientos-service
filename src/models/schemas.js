@@ -82,6 +82,8 @@ const person = new Mongoose.Schema({
   type: { type: String, default: 'Person' },
   name: { type: String },
   logo: { type: String },
+  language: { type: String, default: process.env.VIENTOS_LANGUAGE },
+  emailNotifications: { type: Boolean, default: true },
   categories: [{ type: String }],
   credentials: [credential],
   followings: [following],

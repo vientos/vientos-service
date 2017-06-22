@@ -1,6 +1,7 @@
 const Mongoose = require('mongoose')
 const webpush = require('web-push')
 const cuid = require('cuid')
+const labels = require('vientos-data').labels
 const schema = require('./schemas').person
 const Mailjet = require('node-mailjet').connect(
   process.env.MAILJET_APIKEY_PUBLIC,
@@ -22,19 +23,6 @@ Person.prototype.addCredential = function addCredential (credential) {
   return this.save()
 }
 
-// needed not to leak credentials
-Person.prototype.getProfile = function getProfile () {
-  return {
-    _id: this._id,
-    type: this.type,
-    name: this.name,
-    logo: this.logo,
-    followings: this.followings,
-    favorings: this.favorings,
-    categories: this.categories
-  }
-}
-
 Person.prototype.getPublicProfile = function getPublicProfile () {
   return {
     _id: this._id,
@@ -45,9 +33,9 @@ Person.prototype.getPublicProfile = function getPublicProfile () {
 }
 
 // FIXME i18n and handle new review
-function subjectForNotification (notification, message) {
-  if (!notification.cause) return 'New conversation started'
-  return message.type === 'Message' ? 'New message' : 'New review'
+function subjectForNotification (notification, message, language) {
+  if (!notification.cause) return labels[language]['subject:new-conversation']
+  return message.type === 'Message' ? labels[language]['subject:new-message'] : labels[language]['subject:new-review']
 }
 
 Person.prototype.notify = function (conversation, message) {
@@ -61,14 +49,13 @@ Person.prototype.notify = function (conversation, message) {
   notification.save()
     .catch(err => console.log(err))
   if (this.subscriptions.length) {
-    let body = subjectForNotification(notification, message)
+    let body = subjectForNotification(notification, message, this.language)
     this.sendPushNotification({
       body,
       iri: conversation._id
     })
   }
-  // TODO: check if email notifications on in settings
-  this.sendEmailNotification(notification, message)
+  if (this.emailNotifications) this.sendEmailNotification(notification, message)
 }
 
 Person.prototype.sendPushNotification = function sendPushNotification (data) {
@@ -82,7 +69,7 @@ Person.prototype.sendEmailNotification = function sendEmailNotification (notific
   const emailData = {
     FromEmail: FROM_EMAIL,
     Recipients: [{ Email: this.credentials[0].email }],
-    Subject: 'Vientos - ' + subjectForNotification(notification, message),
+    Subject: 'Vientos - ' + subjectForNotification(notification, message, this.language),
     // TODO: decuple from app
     'Text-part': process.env.PWA_URL + '/conversation/' +
       notification.object.split('/').pop()
