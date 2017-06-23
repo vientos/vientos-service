@@ -21,6 +21,7 @@
     "joi": "^10.5.0",
     "mongoose": "^4.7.9",
     "node-mailjet": "^3.1.0",
+    "raven": "^2.1.0",
     "vientos-data": "https://github.com/vientos/vientos-data.git#0.0.13",
     "web-push": "^3.2.2"
   },

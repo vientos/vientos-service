@@ -5,6 +5,9 @@ const Bell = require('bell')
 const AuthCookie = require('hapi-auth-cookie')
 const mongoose = require('mongoose')
 const vientosProvider = require('./vientosProvider')
+if (process.env.SENTRY_DSN) {
+  require('raven').config(process.env.SENTRY_DSN).install()
+}
 
 const httpServerOptions = {}
 if (process.env.TLS_KEY_PATH && process.env.TLS_CERT_PATH) {
