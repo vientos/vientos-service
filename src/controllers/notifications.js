@@ -1,5 +1,6 @@
 const Boom = require('boom')
 const Notification = require('./../models/notification')
+const Conversation = require('./../models/conversation')
 
 const ns = process.env.OAUTH_CLIENT_DOMAIN + '/notifications/'
 const peopleNs = process.env.OAUTH_CLIENT_DOMAIN + '/people/'
@@ -30,9 +31,19 @@ function save (request, reply) {
     }).catch(err => { throw err })
 }
 
+/**
+ * only notifications on conversations i can engage with
+ * it will filter out notifications on conversations on intents
+ * which i don't admin any more
+ */
 function mine (request, reply) {
   if (peopleNs + request.params.id !== request.auth.credentials.id) return reply(Boom.forbidden())
-  Notification.find({ for: request.auth.credentials.id, active: true })
+  Conversation.findByPersonCanEngage(request.auth.credentials.id)
+    .then(conversations => Notification.find({
+      for: request.auth.credentials.id,
+      active: true,
+      object: { $in: conversations.map(c => c._id) }
+    }))
     .then(notifications => reply(notifications))
     .catch(err => { throw err })
 }

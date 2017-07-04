@@ -93,23 +93,13 @@ Conversation.prototype.loadRelatedIntents = function loadRelatedIntents () {
 }
 
 Conversation.prototype.canEngage = function canEngage (personId) {
-  // im creator
-  if (this.creator === personId) return Promise.resolve(true)
+  // no matching intent and i'm creator
+  if (!this.matchingIntent && this.creator === personId) return Promise.resolve(true)
   // I admin causing or matching intent
   return this.loadRelatedIntents()
     .then(intents => {
       if (intents.some(intent => intent.admins.includes(personId))) return true
-      else {
-        // I admin a project associeated with causing or matching intent
-        let projectIds = intents.reduce((acc, intent) => {
-          return acc.concat(intent.projects)
-        }, [])
-        return Project.find({_id: {$in: projectIds}})
-          .then(projects => {
-            return projects.some(project => project.admins.includes(personId))
-          }
-        )
-      }
+      else return false
     })
 }
 
