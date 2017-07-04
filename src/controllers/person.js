@@ -44,8 +44,7 @@ function save (request, reply) {
       }
     }).then(person => {
       if (person) {
-        // getProfile() needed not to leak credentials
-        return reply(person.getProfile())
+        return reply(person)
       }
     }).catch(err => { throw err })
 }
