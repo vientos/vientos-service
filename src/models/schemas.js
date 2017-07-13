@@ -106,6 +106,7 @@ const review = new Mongoose.Schema({
   type: { type: String, default: 'Review' },
   as: { type: String },
   body: { type: String },
+  rating: { type: String }, // satisfied | neutral | dissatisfied
   createdAt: { type: Date, default: Date.now },
   creator: { type: String, ref: 'Person' },
   conversation: { type: String, ref: 'Conversation' },
