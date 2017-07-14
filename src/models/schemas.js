@@ -124,6 +124,7 @@ const collaboration = new Mongoose.Schema({
 const conversation = new Mongoose.Schema({
   _id: { type: String },
   type: { type: String, default: 'Conversation' },
+  createdAt: { type: Date, default: Date.now },
   creator: { type: String, ref: 'Person' },
   causingIntent: { type: String, ref: 'Intent' },
   matchingIntent: { type: String, ref: 'Intent' },
