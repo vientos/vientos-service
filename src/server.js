@@ -38,7 +38,7 @@ const AuthRoutes = require('./routes/auth')
 server.register([AuthCookie, Bell], (err) => {
   if (err) throw err
 
-  const IS_SECURE = NODE_ENV === 'production'
+  const IS_SECURE = NODE_ENV !== 'development'
 
   server.auth.strategy('session', 'cookie', true, {
     password: COOKIE_PASSWORD,
