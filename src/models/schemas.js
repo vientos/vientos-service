@@ -30,7 +30,7 @@ const intent = new Mongoose.Schema({
   description: { type: String },
   question: { type: String },
   logo: { type: String },
-  status: { type: String, default: 'active' },
+  status: { type: String, default: 'active' }, // active | inactive
   direction: { type: String }, // offer || request
   collaborationType: { type: String }, // work || usage || consumption || ownership
   reciprocity: { type: String }, // gift || barter, time-exchange, trade

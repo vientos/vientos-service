@@ -29,10 +29,11 @@ function oauth (request, reply) {
         return person.addCredential(credential)
       }
     } else {
+      let emailHash = crypto.createHash('md5').update(credential.email).digest('hex')
       return new Person({
         _id: process.env.OAUTH_CLIENT_DOMAIN + '/people/' + cuid(),
         name,
-        logo: 'https://robohash.org/' + crypto.createHash('md5').update(credential.email).digest('hex'),
+        logo: `https://robohash.org/${emailHash}?set=set4`,
         credentials: [credential]
       }).save()
     }
