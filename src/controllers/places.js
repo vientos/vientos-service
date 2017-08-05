@@ -1,15 +1,11 @@
 const Place = require('./../models/place')
 
-function list (request, reply) {
-  Place.find({})
-    .then(places => reply(places))
-    .catch(err => { throw err })
+async function list (request, reply) {
+  reply(await Place.find({}))
 }
 
-function save (request, reply) {
-  Place.create(request.payload)
-    .then(place => reply(place))
-    .catch(err => { throw err })
+async function save (request, reply) {
+  reply(await Place.create(request.payload))
 }
 
 module.exports = {

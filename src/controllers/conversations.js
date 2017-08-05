@@ -4,71 +4,56 @@ const Conversation = require('./../models/conversation')
 const ns = process.env.OAUTH_CLIENT_DOMAIN + '/conversations/'
 const peopleNs = process.env.OAUTH_CLIENT_DOMAIN + '/people/'
 
-function view (request, reply) {
-  Conversation.findById(ns + request.params.id)
-    .then(conversation => {
-      if (!conversation) return reply(Boom.notFound())
-      conversation.canEngage(request.auth.credentials.id)
-        .then(allowed => {
-          if (allowed) reply(conversation)
-          else reply(Boom.forbidden())
-        }
-      )
-    }).catch(err => { throw err })
+async function view (request, reply) {
+  let conversation = await Conversation.findById(ns + request.params.id)
+  if (!conversation) return reply(Boom.notFound())
+  let authorized = await conversation.canEngage(request.auth.credentials.id)
+  if (!authorized) return reply(Boom.forbidden())
+  reply(conversation)
 }
 
 // TODO optimize when loooots of conversations
-function mine (request, reply) {
-  if (peopleNs + request.params.id !== request.auth.credentials.id) return reply(Boom.forbidden())
-  Conversation.findByPersonCanEngage(request.auth.credentials.id)
-    .then(conversations => reply(conversations))
-    .catch(err => { throw err })
+async function mine (request, reply) {
+  let authorized = peopleNs + request.params.id === request.auth.credentials.id
+  if (!authorized) return reply(Boom.forbidden())
+  reply(await Conversation.findByPersonCanEngage(request.auth.credentials.id))
 }
 
-function listReviews (request, reply) {
-  Conversation.find({})
-    .then(conversations => {
-      let reviews = conversations.reduce((acc, conversation) => {
-        return acc.concat(conversation.reviews)
-      }, [])
-      reply(reviews)
-    }).catch(err => { throw err })
+async function listReviews (request, reply) {
+  let conversations = await Conversation.find({})
+  let reviews = conversations.reduce((acc, conversation) => {
+    return acc.concat(conversation.reviews)
+  }, [])
+  reply(reviews)
 }
 
 // TODO if open conversation with same creator, cousing and matching intent, dont
 // TODO check if causing and matching exist and are active, in the db
-function create (request, reply) {
-  if (request.payload.creator !== request.auth.credentials.id || !request.payload.causingIntent) return reply(Boom.badData())
-  Conversation.createAndAddBacklinks(request.payload)
-    .then(conversation => reply(conversation))
-    .catch(err => { throw err })
+async function create (request, reply) {
+  let valid = request.payload.creator === request.auth.credentials.id && request.payload.causingIntent
+  if (!valid) return reply(Boom.badData())
+  reply(await Conversation.createAndAddBacklinks(request.payload))
 }
 
-function addMessage (request, reply) {
-  if (request.payload.creator !== request.auth.credentials.id) return reply(Boom.badData())
-  Conversation.findById(request.payload.conversation)
-    .then(conversation => {
-      if (!conversation) return reply(Boom.badData())
-      conversation.canEngage(request.auth.credentials.id)
-        .then(allowed => {
-          if (!allowed) return reply(Boom.forbidden())
-          return conversation.addMessage(request.payload)
-        }).then(message => reply(message))
-    }).catch(err => { throw err })
+async function addMessage (request, reply) {
+  let valid = request.payload.creator === request.auth.credentials.id
+  if (!valid) return reply(Boom.badData())
+  let conversation = await Conversation.findById(request.payload.conversation)
+  if (!conversation) return reply(Boom.badData())
+  let authorized = await conversation.canEngage(request.auth.credentials.id)
+  if (!authorized) return reply(Boom.forbidden())
+  reply(await conversation.addMessage(request.payload))
 }
 
-function addReview (request, reply) {
-  if (request.payload.creator !== request.auth.credentials.id) return reply(Boom.badData())
-  Conversation.findById(request.payload.conversation)
-    .then(conversation => {
-      if (!conversation) return reply(Boom.badData())
-      conversation.canEngage(request.auth.credentials.id)
-        .then(allowed => {
-          if (!allowed) return reply(Boom.forbidden())
-          // TODO make sure not already reviewed
-          return conversation.addReview(request.payload)
-        }).then(review => reply(review))
-    }).catch(err => { throw err })
+async function addReview (request, reply) {
+  let valid = request.payload.creator === request.auth.credentials.id
+  if (!valid) return reply(Boom.badData())
+  let conversation = await Conversation.findById(request.payload.conversation)
+  if (!conversation) return reply(Boom.badData())
+  let authorized = await conversation.canEngage(request.auth.credentials.id)
+  if (!authorized) return reply(Boom.forbidden())
+  // TODO make sure not already reviewed
+  reply(await conversation.addReview(request.payload))
 }
 
 module.exports = {

@@ -1,34 +1,24 @@
 const Boom = require('boom')
 const Notification = require('./../models/notification')
-const Conversation = require('./../models/conversation')
 
 const ns = process.env.OAUTH_CLIENT_DOMAIN + '/notifications/'
 const peopleNs = process.env.OAUTH_CLIENT_DOMAIN + '/people/'
 
-function save (request, reply) {
-  Notification.findById(ns + request.params.id)
-    .then(notification => {
-      if (notification) {
-        return request.auth.credentials.id === notification.for
-      } else {
-        return false
-      }
-    }).then(allowed => {
-      if (!allowed) {
-        reply(Boom.forbidden())
-        return null
-      } else {
-        return Notification.findByIdAndUpdate(
-          ns + request.params.id,
-          request.payload,
-          { new: true, upsert: true }
-        )
-      }
-    }).then(notification => {
-      if (notification) {
-        return reply(notification)
-      }
-    }).catch(err => { throw err })
+/**
+ * the service creates notifications so client only can save
+ * notification which already exists
+ */
+async function save (request, reply) {
+  let notification = await Notification.findById(ns + request.params.id)
+  if (!notification) return reply(Boom.badRequest())
+  let authorized = request.auth.credentials.id === notification.for
+  if (!authorized) return reply(Boom.forbidden())
+  let updated = await Notification.findByIdAndUpdate(
+    ns + request.params.id,
+    request.payload,
+    { new: true, upsert: true }
+  )
+  return reply(updated)
 }
 
 /**
@@ -36,16 +26,11 @@ function save (request, reply) {
  * it will filter out notifications on conversations on intents
  * which i don't admin any more
  */
-function mine (request, reply) {
-  if (peopleNs + request.params.id !== request.auth.credentials.id) return reply(Boom.forbidden())
-  Conversation.findByPersonCanEngage(request.auth.credentials.id)
-    .then(conversations => Notification.find({
-      for: request.auth.credentials.id,
-      active: true,
-      object: { $in: conversations.map(c => c._id) }
-    }))
-    .then(notifications => reply(notifications))
-    .catch(err => { throw err })
+async function mine (request, reply) {
+  let authorized = peopleNs + request.params.id === request.auth.credentials.id
+  if (!authorized) return reply(Boom.forbidden())
+  let notifications = await Notification.findActiveForPerson(request.auth.credentials.id)
+  reply(notifications)
 }
 
 module.exports = {

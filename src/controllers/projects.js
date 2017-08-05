@@ -6,51 +6,28 @@ function canCreateOrUpdate (project, personId) {
   return project.admins.includes(personId)
 }
 
-function list (request, reply) {
-  Project.find({})
-    .sort({ createdAt: -1 })
-    .then(projects => reply(projects))
-    .catch(err => { throw err })
+async function list (request, reply) {
+  reply(await Project.find({}).sort({ createdAt: -1 }))
 }
 
-function view (request, reply) {
-  Project.findById(ns + request.params.projectId)
-    .then(project => reply(project))
-    .catch(err => { throw err })
-}
-
-// TODO refactor make dry with intents save
+// we have to check first if project already exists in database
+// otherwise one could edit anyone elses existing projects
+// by adding/replacing project in projects array
 // TODO moderation flow for new projects
-function save (request, reply) {
-  Project.findById(ns + request.params.projectId)
-    .then(project => {
-      if (project) {
-        // otherwise one could edit anyone elses existing projects
-        // by adding/replacing project in projects array
-        return canCreateOrUpdate(project, request.auth.credentials.id)
-      } else {
-        return canCreateOrUpdate(request.payload, request.auth.credentials.id)
-      }
-    }).then(allowed => {
-      if (!allowed) {
-        reply(Boom.forbidden())
-        return null
-      } else {
-        return Project.findByIdAndUpdate(
-          ns + request.params.projectId,
-          request.payload,
-          { new: true, upsert: true, setDefaultsOnInsert: true }
-        )
-      }
-    }).then(project => {
-      if (project) {
-        return reply(project)
-      }
-    }).catch(err => { throw err })
+async function save (request, reply) {
+  let project = await Project.findById(ns + request.params.projectId)
+  if (!project) project = request.payload
+  let authorized = canCreateOrUpdate(project, request.auth.credentials.id)
+  if (!authorized) return reply(Boom.forbidden())
+  let updated = await Project.findByIdAndUpdate(
+    ns + request.params.projectId,
+    request.payload,
+    { new: true, upsert: true, setDefaultsOnInsert: true }
+  )
+  reply(updated)
 }
 
 module.exports = {
   list,
-  view,
   save
 }

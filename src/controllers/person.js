@@ -2,137 +2,76 @@ const Boom = require('boom')
 const Person = require('./../models/person')
 
 const ns = process.env.OAUTH_CLIENT_DOMAIN + '/people/'
-const followingsNs = process.env.OAUTH_CLIENT_DOMAIN + '/followings/'
-const favoringsNs = process.env.OAUTH_CLIENT_DOMAIN + '/favorings/'
-
-function get (request, reply) {
-  if (ns + request.params.id !== request.auth.credentials.id) {
-    reply(Boom.forbidden())
-  } else {
-    Person.findById(request.auth.credentials.id)
-      .then(person => {
-        if (!person) return new Error('no person found based on cookie!')
-        reply(person)
-      }).catch(err => { throw err })
-  }
+const relatedNs = {
+  followings: process.env.OAUTH_CLIENT_DOMAIN + '/followings/',
+  favorings: process.env.OAUTH_CLIENT_DOMAIN + '/favorings/'
 }
 
-function list (request, reply) {
-  Person.find({})
-    .then(people => reply(people.map(person => person.getPublicProfile())))
-    .catch(err => { throw err })
+async function get (request, reply) {
+  let authorized = ns + request.params.id === request.auth.credentials.id
+  if (!authorized) return reply(Boom.forbidden())
+  reply(await Person.findById(request.auth.credentials.id))
 }
 
-function save (request, reply) {
-  Person.findById(ns + request.params.id)
-    .then(person => {
-      if (person) {
-        return request.auth.credentials.id === person._id
-      } else {
-        return false
-      }
-    }).then(allowed => {
-      if (!allowed) {
-        reply(Boom.forbidden())
-        return null
-      } else {
-        return Person.findByIdAndUpdate(
-          ns + request.params.id,
-          request.payload,
-          { new: true, upsert: true }
-        )
-      }
-    }).then(person => {
-      if (person) {
-        return reply(person)
-      }
-    }).catch(err => { throw err })
+// must use getPublicProfile no to leak private data
+async function list (request, reply) {
+  let people = await Person.find({})
+  reply(people.map(person => person.getPublicProfile()))
+}
+
+async function save (request, reply) {
+  let authorized = ns + request.params.id === request.auth.credentials.id
+  if (!authorized) return reply(Boom.forbidden())
+  let valid = request.auth.credentials.id === request.payload._id
+  if (!valid) return reply(Boom.badData())
+  let updated = await Person.findByIdAndUpdate(
+    request.auth.credentials.id,
+    request.payload,
+    { new: true, upsert: true }
+  )
+  reply(updated)
+}
+
+async function addQualifiedRelation (collectionName, propertyName, request, reply) {
+  let valid = request.payload.person === request.auth.credentials.id
+  if (!valid) return reply(Boom.badData())
+  let person = await Person.findById(request.auth.credentials.id)
+  // make sure not alraedy following
+  let existing = person[collectionName].find(el => el[propertyName] === request.payload[propertyName])
+  if (existing) return reply(Boom.conflict())
+  person[collectionName].push(request.payload)
+  await person.save()
+  reply(person[collectionName].id(request.payload._id))
 }
 
 function follow (request, reply) {
-  if (request.payload.person !== request.auth.credentials.id) {
-    reply(Boom.forbidden())
-  } else {
-    Person.findById(request.auth.credentials.id)
-    .then(person => {
-      // make sure not alraedy following
-      if (person.followings.find(el => el.project === request.payload.project)) {
-        reply(Boom.conflict())
-        return null
-      } else {
-        person.followings.push(request.payload)
-        return person.save()
-      }
-    }).then(person => {
-      if (person) {
-        reply(person.followings.id(request.payload._id))
-      }
-    }).catch(err => { throw err })
-  }
-}
-
-function unfollow (request, reply) {
-  // TODO: 403 if attempted to remove someone else's following
-  Person.findById(request.auth.credentials.id)
-  .then(person => {
-    person.followings.id(followingsNs + request.params.id).remove()
-    return person.save()
-  }).then(result => reply().code(204))
-  .catch(err => { throw err })
+  return addQualifiedRelation('followings', 'project', request, reply)
 }
 
 function favor (request, reply) {
-  if (request.payload.person !== request.auth.credentials.id) {
-    reply(Boom.forbidden())
-  } else {
-    Person.findById(request.auth.credentials.id)
-    .then(person => {
-      // make sure not alraedy favoring
-      if (person.favorings.find(el => el.intent === request.payload.intent)) {
-        reply(Boom.conflict())
-        return null
-      } else {
-        person.favorings.push(request.payload)
-        return person.save()
-      }
-    }).then(person => {
-      if (person) {
-        reply(person.favorings.id(request.payload._id))
-      }
-    }).catch(err => { throw err })
-  }
-}
-
-function unfavor (request, reply) {
-  // TODO: 403 if attempted to remove someone else's favoring
-  Person.findById(request.auth.credentials.id)
-  .then(person => {
-    person.favorings.id(favoringsNs + request.params.id).remove()
-    return person.save()
-  }).then(result => reply().code(204))
-  .catch(err => { throw err })
+  return addQualifiedRelation('favorings', 'intent', request, reply)
 }
 
 function subscribe (request, reply) {
-  if (request.payload.person !== request.auth.credentials.id) {
-    reply(Boom.forbidden())
-  } else {
-    Person.findById(request.auth.credentials.id)
-    .then(person => {
-      // make sure not alraedy subscribed
-      if (person.subscriptions.find(el => el.endpoint === request.payload.endpoint)) {
-        reply(Boom.conflict())
-        return null
-      } else {
-        person.subscriptions.push(request.payload)
-        return person.save()
-      }
-    }).then(person => {
-      if (person) {
-        reply(person.subscriptions.id(request.payload._id))
-      }
-    }).catch(err => { throw err })
-  }
+  return addQualifiedRelation('subscriptions', 'endpoint', request, reply)
+}
+
+async function removeQualifiedRelation (collectionName, request, reply) {
+  let person = await Person.findById(request.auth.credentials.id)
+  let target = person[collectionName].id(relatedNs[collectionName] + request.params.id)
+  // TODO: 403 if attempted to remove someone else's following, 404 if doesn't exist
+  if (!target) return reply(Boom.badRequest())
+  target.remove()
+  await person.save()
+  reply().code(204)
+}
+
+function unfollow (request, reply) {
+  return removeQualifiedRelation('followings', request, reply)
+}
+
+function unfavor (request, reply) {
+  return removeQualifiedRelation('favorings', request, reply)
 }
 
 module.exports = {
