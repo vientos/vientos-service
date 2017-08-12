@@ -5,10 +5,6 @@ const Person = require('./../models/person')
 
 const PWA_URL = process.env.PWA_URL || 'http://localhost:8080'
 
-function hello (request, reply) {
-  reply().redirect('/sessions/' + request.auth.credentials.sessionId).code(303)
-}
-
 function oauth (request, reply) {
   if (!request.auth.isAuthenticated) {
     reply(Boom.unauthorized())
@@ -47,6 +43,5 @@ function oauth (request, reply) {
 }
 
 module.exports = {
-  hello,
   oauth
 }
