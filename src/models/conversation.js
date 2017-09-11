@@ -1,6 +1,5 @@
 const Mongoose = require('mongoose')
 const schema = require('./schemas').conversation
-const Project = require('./project')
 const Person = require('./person')
 const Intent = require('./intent')
 

@@ -12,7 +12,6 @@ describe('/auth/hello', function () {
     return server.inject('/auth/hello')
       .then((response) => {
         expect(response.statusCode).to.equal(401)
-        return
       })
   })
   it('should redirect to the session if authenticated', function () {
@@ -23,7 +22,6 @@ describe('/auth/hello', function () {
     }).then((response) => {
       expect(response.statusCode).to.equal(303)
       expect(response.headers.location).to.equal('/sessions/' + sessionId)
-      return
     })
   })
 })
