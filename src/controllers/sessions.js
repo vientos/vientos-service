@@ -8,6 +8,7 @@ function inPersonalScope (request, reply) {
   return true
 }
 
+// TODO session model (non mongoose)
 function get (request, reply) {
   if (inPersonalScope(request, reply)) {
     let prefix = process.env.OAUTH_CLIENT_DOMAIN + '/sessions/'
