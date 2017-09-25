@@ -19,7 +19,7 @@ const PORT = process.env.HAPI_PORT || 3000
 const COOKIE_PASSWORD = process.env.COOKIE_PASSWORD || 'it-should-have-min-32-characters'
 const NODE_ENV = process.env.NODE_ENV || 'development'
 const MONGO_URL = process.env.MONGO_URL || 'mongodb://localhost:27017'
-const domain = process.env.OAUTH_CLIENT_DOMAIN
+const domain = process.env.OAUTH_CLIENT_DOMAIN || 'http://localhost:3000'
 
 mongoose.Promise = global.Promise
 mongoose.connect(MONGO_URL, { promiseLibrary: global.Promise })

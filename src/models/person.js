@@ -11,7 +11,9 @@ const FROM_EMAIL = process.env.FROM_EMAIL
 
 const Notification = require('./notification')
 
-webpush.setGCMAPIKey(process.env.GCM_API_KEY)
+if (process.env.GCM_API_KEY) {
+  webpush.setGCMAPIKey(process.env.GCM_API_KEY)
+}
 
 const Person = Mongoose.model('Person', schema, 'people')
 

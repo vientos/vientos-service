@@ -23,5 +23,5 @@ source env
 finally
 
 ```shell
-npm run dev
+npm start
 ```
