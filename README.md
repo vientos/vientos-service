@@ -1,7 +1,7 @@
 # vientos-service
 
 [![Build Status](https://travis-ci.org/vientos/vientos-service.svg?branch=staging)](https://travis-ci.org/vientos/vientos-service)
-[![codecov](https://codecov.io/gh/vientos/vientos-service/branch/master/graph/badge.svg)](https://codecov.io/gh/vientos/vientos-service)
+[![codecov](https://codecov.io/gh/vientos/vientos-service/branch/staging/graph/badge.svg)](https://codecov.io/gh/vientos/vientos-service)
 [![bitHound Code](https://www.bithound.io/github/vientos/vientos-service/badges/code.svg)](https://www.bithound.io/github/vientos/vientos-service)
 
 [![bitHound Dependencies](https://www.bithound.io/github/vientos/vientos-service/badges/dependencies.svg)](https://www.bithound.io/github/vientos/vientos-service/master/dependencies/npm)

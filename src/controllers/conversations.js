@@ -3,7 +3,6 @@ const Conversation = require('./../models/conversation')
 
 const ns = process.env.OAUTH_CLIENT_DOMAIN + '/conversations/'
 const peopleNs = process.env.OAUTH_CLIENT_DOMAIN + '/people/'
-const collaborationsNs = process.env.OAUTH_CLIENT_DOMAIN + '/collaborations/'
 
 function view (request, reply) {
   Conversation.findById(ns + request.params.id)
@@ -24,16 +23,6 @@ function mine (request, reply) {
   Conversation.findByPersonCanEngage(request.auth.credentials.id)
     .then(conversations => reply(conversations))
     .catch(err => { throw err })
-}
-
-function listCollaborations (request, reply) {
-  Conversation.find({})
-    .then(conversations => {
-      let collaborations = conversations.filter(conversation => {
-        return conversation.collaboration
-      }).map(conversation => conversation.collaboration)
-      reply(collaborations)
-    }).catch(err => { throw err })
 }
 
 function listReviews (request, reply) {
@@ -82,41 +71,11 @@ function addReview (request, reply) {
     }).catch(err => { throw err })
 }
 
-function saveCollaboration (request, reply) {
-  Conversation.findById(request.payload.conversation)
-    .then(conversation => {
-      if (!conversation) return reply(Boom.badData())
-      if (conversation.reviews.length > 0) return reply(Boom.illegal())
-      conversation.canEngage(request.auth.credentials.id)
-        .then(allowed => {
-          if (!allowed) return reply(Boom.forbidden())
-          // TODO make sure not already reviewed
-          return conversation.saveCollaboration(request.payload)
-        }).then(collaboration => reply(collaboration))
-    }).catch(err => { throw err })
-}
-
-function removeCollaboration (request, reply) {
-  Conversation.findOne({ 'collaboration._id': collaborationsNs + request.params.id })
-    .then(conversation => {
-      if (!conversation) return reply(Boom.badData())
-      if (conversation.reviews.length > 0) return reply(Boom.illegal())
-      conversation.canEngage(request.auth.credentials.id)
-        .then(allowed => {
-          if (!allowed) return reply(Boom.forbidden())
-          return conversation.removeCollaboration(request.payload)
-        }).then(() => reply().code(204))
-    }).catch(err => { throw err })
-}
-
 module.exports = {
   view,
   mine,
   create,
   addMessage,
   listReviews,
-  addReview,
-  listCollaborations,
-  saveCollaboration,
-  removeCollaboration
+  addReview
 }

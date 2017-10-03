@@ -50,15 +50,8 @@ function save (request, reply) {
     }).catch(err => { throw err })
 }
 
-function remove (request, reply) {
-  Intent.remove({ _id: ns + request.params.intentId })
-    .then(() => reply().code(204))
-    .catch(err => { throw err })
-}
-
 module.exports = {
   list,
   view,
-  save,
-  remove
+  save
 }

@@ -43,27 +43,4 @@ module.exports = [
     config: {
       handler: ConversationsController.addReview
     }
-  },
-  {
-    method: 'GET',
-    path: '/collaborations',
-    config: {
-      handler: ConversationsController.listCollaborations,
-      auth: false
-    }
-  },
-  {
-    method: 'PUT',
-    path: '/collaborations/{id}',
-    config: {
-      handler: ConversationsController.saveCollaboration
-    }
-  },
-  {
-    method: 'DELETE',
-    path: '/collaborations/{id}',
-    config: {
-      handler: ConversationsController.removeCollaboration
-    }
-  }
-]
+  }]
