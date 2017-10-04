@@ -72,19 +72,6 @@ Conversation.prototype.addReview = function addReview (payload) {
     })
 }
 
-Conversation.prototype.saveCollaboration = function saveCollaboration (payload) {
-  this.collaboration = payload
-  return this.save()
-    .then(conversation => {
-      return conversation.collaboration
-    })
-}
-
-Conversation.prototype.removeCollaboration = function removeCollaboration (payload) {
-  this.collaboration.remove()
-  return this.save()
-}
-
 Conversation.prototype.loadRelatedIntents = function loadRelatedIntents () {
   let intentIds = [this.causingIntent]
   if (this.matchingIntent) intentIds.push(this.matchingIntent)

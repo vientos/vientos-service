@@ -40,7 +40,6 @@ const intent = new Mongoose.Schema({
   locations: [{ type: String, ref: 'Place' }],
   projects: [{ type: String, ref: 'Project' }],
   admins: [{ type: String, ref: 'Person' }]
-  // collaborations: [{ type: String, ref: 'Collaboration' }]
 })
 
 const credential = new Mongoose.Schema({
@@ -107,15 +106,7 @@ const review = new Mongoose.Schema({
   createdAt: { type: Date, default: Date.now },
   creator: { type: String, ref: 'Person' },
   conversation: { type: String, ref: 'Conversation' },
-  // collaboration: { type: String, ref: 'Collaboration' }
   success: { type: Boolean, default: false }
-})
-
-const collaboration = new Mongoose.Schema({
-  _id: { type: String },
-  type: { type: String, default: 'Collaboration' },
-  body: { type: String },
-  conversation: { type: String, ref: 'Conversation' }
 })
 
 const conversation = new Mongoose.Schema({
@@ -125,7 +116,6 @@ const conversation = new Mongoose.Schema({
   creator: { type: String, ref: 'Person' },
   causingIntent: { type: String, ref: 'Intent' },
   matchingIntent: { type: String, ref: 'Intent' },
-  collaboration: collaboration,
   messages: [message],
   reviews: [review]
 })
@@ -151,7 +141,6 @@ module.exports = {
   person,
   message,
   review,
-  collaboration,
   conversation,
   notification
 }
