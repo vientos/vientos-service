@@ -32,7 +32,7 @@ async function listReviews (request, reply) {
 async function create (request, reply) {
   let valid = request.payload.creator === request.auth.credentials.id && request.payload.causingIntent
   if (!valid) return reply(Boom.badData())
-  reply(await Conversation.createAndAddBacklinks(request.payload))
+  reply(await Conversation.createAndNotifyAdmins(request.payload))
 }
 
 async function addMessage (request, reply) {

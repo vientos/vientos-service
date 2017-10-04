@@ -39,10 +39,7 @@ const intent = new Mongoose.Schema({
   creator: { type: String, ref: 'Person' },
   locations: [{ type: String, ref: 'Place' }],
   projects: [{ type: String, ref: 'Project' }],
-  admins: [{ type: String, ref: 'Person' }],
-  openConversations: [{ type: String, ref: 'Conversation' }],
-  abortedConversations: [{ type: String, ref: 'Conversation' }],
-  successfulConversations: [{ type: String, ref: 'Conversation' }]
+  admins: [{ type: String, ref: 'Person' }]
   // collaborations: [{ type: String, ref: 'Collaboration' }]
 })
 

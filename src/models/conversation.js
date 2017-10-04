@@ -16,7 +16,7 @@ Conversation.findByPersonCanEngage = function findByPersonCanEngage (personId) {
     })
 }
 
-Conversation.createAndAddBacklinks = function createAndAddBacklinks (payload) {
+Conversation.createAndNotifyAdmins = function createAndNotifyAdmins (payload) {
   // fist message doesn't reference the conversation so we add that reference
   payload.messages[0].conversation = payload._id
   let newConversation
@@ -25,7 +25,7 @@ Conversation.createAndAddBacklinks = function createAndAddBacklinks (payload) {
       newConversation = conversation
       return conversation.loadRelatedIntents()
     }).then(intents => {
-      return Promise.all(intents.map(intent => intent.addOpenConversation(newConversation)))
+      return Promise.all(intents.map(intent => intent.notifyAdmins(newConversation)))
     }).then(() => newConversation)
 }
 
@@ -66,7 +66,7 @@ Conversation.prototype.addReview = function addReview (payload) {
         return []
       }
     }).then(intents => {
-      return Promise.all(intents.map(intent => intent.handleConversationEnding(updatedConversation, review)))
+      return Promise.all(intents.map(intent => intent.notifyAdmins(updatedConversation, review)))
     }).then(() => {
       return review
     })

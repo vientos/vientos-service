@@ -14,29 +14,4 @@ Intent.prototype.notifyAdmins = function notifyAdmins (conversation, message) {
    })
 }
 
-Intent.prototype.addOpenConversation = function addOpenConversation (conversation) {
-  if (!this.openConversations) this.openConversations = []
-  this.openConversations.push(conversation._id)
-  this.notifyAdmins(conversation)
-  return this.save()
-}
-
-Intent.prototype.handleConversationEnding = function handleConversationEnding (conversation, review) {
-  // FIXME: currently will send 'New conversation'
-  this.notifyAdmins(conversation, review)
-  let success = review.success
-  // if (conversation.collaboration) {
-  if (success) {
-    // if (!this.collaborations) this.collaborations = []
-    // this.collaborations.push(conversation.collaboration._id)
-    if (!this.successfulConversations) this.successfulConversations = []
-    this.successfulConversations.push(conversation._id)
-  } else {
-    if (!this.abortedConversations) this.abortedConversations = []
-    this.abortedConversations.push(conversation._id)
-  }
-  this.openConversations = this.openConversations.filter(conversationId => conversationId !== conversation._id)
-  return this.save()
-}
-
 module.exports = Intent
