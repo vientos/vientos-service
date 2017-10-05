@@ -106,6 +106,8 @@ const review = new Mongoose.Schema({
   createdAt: { type: Date, default: Date.now },
   creator: { type: String, ref: 'Person' },
   conversation: { type: String, ref: 'Conversation' },
+  causingIntent: { type: String, ref: 'Intent' },
+  matchingIntent: { type: String, ref: 'Intent' },
   success: { type: Boolean, default: false }
 })
 

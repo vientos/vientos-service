@@ -50,6 +50,11 @@ async function addReview (request, reply) {
   if (!valid) return reply(Boom.badData())
   let conversation = await Conversation.findById(request.payload.conversation)
   if (!conversation) return reply(Boom.badData())
+  valid = request.payload.causingIntent === conversation.causingIntent
+  if (valid && request.payload.matchingIntent) {
+    valid = request.payload.matchingIntent === conversation.matchingIntent
+  }
+  if (!valid) return reply(Boom.badData())
   let authorized = await conversation.canEngage(request.auth.credentials.id)
   if (!authorized) return reply(Boom.forbidden())
   // TODO make sure not already reviewed
