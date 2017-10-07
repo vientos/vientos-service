@@ -50,27 +50,27 @@ Conversation.prototype.addMessage = function addMessage (payload) {
 }
 
 // TODO Copy/Reuse from pwa canReview()
-Conversation.prototype.addReview = function addReview (payload) {
+// Conversation.prototype.addReview = function addReview (payload) {
   // TODO: also check if admin of the matchingIntent // there can be only two reviews
-  this.reviews.push(payload)
-  let review
-  let updatedConversation
-  return this.save()
-    .then(conversation => {
-      updatedConversation = conversation
-      review = updatedConversation.reviews.find(review => review.creator === payload.creator)
-      if (review.creator !== conversation.creator) conversation.notifyCreator(review)
-      if (updatedConversation.reviews.length === 1) {
-        return this.loadRelatedIntents()
-      } else {
-        return []
-      }
-    }).then(intents => {
-      return Promise.all(intents.map(intent => intent.notifyAdmins(updatedConversation, review)))
-    }).then(() => {
-      return review
-    })
-}
+  // this.reviews.push(payload)
+  // let review
+  // let updatedConversation
+  // return this.save()
+    // .then(conversation => {
+    //   updatedConversation = conversation
+    //   review = updatedConversation.reviews.find(review => review.creator === payload.creator)
+    //   if (review.creator !== conversation.creator) conversation.notifyCreator(review)
+    //   if (updatedConversation.reviews.length === 1) {
+    //     return this.loadRelatedIntents()
+    //   } else {
+    //     return []
+    //   }
+    // }).then(intents => {
+      // return Promise.all(intents.map(intent => intent.notifyAdmins(updatedConversation, review)))
+    // }).then(() => {
+      // return review
+    // })
+// }
 
 Conversation.prototype.loadRelatedIntents = function loadRelatedIntents () {
   let intentIds = [this.causingIntent]

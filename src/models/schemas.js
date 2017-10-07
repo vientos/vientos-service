@@ -118,8 +118,7 @@ const conversation = new Mongoose.Schema({
   creator: { type: String, ref: 'Person' },
   causingIntent: { type: String, ref: 'Intent' },
   matchingIntent: { type: String, ref: 'Intent' },
-  messages: [message],
-  reviews: [review]
+  messages: [message]
 })
 
 const notification = new Mongoose.Schema({
