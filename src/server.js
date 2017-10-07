@@ -5,6 +5,10 @@ const Bell = require('bell')
 const AuthCookie = require('hapi-auth-cookie')
 const mongoose = require('mongoose')
 const data = require('vientos-data')
+
+const bus = require('./bus')
+const notifierHandler = require('./notifier')
+
 const vientosProvider = require('./vientosProvider')
 if (process.env.SENTRY_DSN) {
   require('raven').config(process.env.SENTRY_DSN).install()
@@ -147,6 +151,11 @@ server.route({
     auth: false
   }
 })
+
+// events bus
+bus.on('NEW_CONVERSATION', notifierHandler)
+bus.on('NEW_MESSAGE', notifierHandler)
+bus.on('NEW_REVIEW', notifierHandler)
 
 // don't start if required from other script
 if (!module.parent) {

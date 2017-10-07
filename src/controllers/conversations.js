@@ -1,5 +1,6 @@
 const Boom = require('boom')
 const Conversation = require('./../models/conversation')
+const bus = require('../bus')
 
 const ns = process.env.OAUTH_CLIENT_DOMAIN + '/conversations/'
 const peopleNs = process.env.OAUTH_CLIENT_DOMAIN + '/people/'
@@ -24,7 +25,9 @@ async function mine (request, reply) {
 async function create (request, reply) {
   let valid = request.payload.creator === request.auth.credentials.id && request.payload.causingIntent
   if (!valid) return reply(Boom.badData())
-  reply(await Conversation.createAndNotifyAdmins(request.payload))
+  let conversation = await Conversation.create(request.payload)
+  reply(conversation)
+  bus.emit('NEW_CONVERSATION', { conversation })
 }
 
 async function addMessage (request, reply) {
@@ -34,7 +37,9 @@ async function addMessage (request, reply) {
   if (!conversation) return reply(Boom.badData())
   let authorized = await conversation.canEngage(request.auth.credentials.id)
   if (!authorized) return reply(Boom.forbidden())
-  reply(await conversation.addMessage(request.payload))
+  let message = await conversation.addMessage(request.payload)
+  reply(message)
+  bus.emit('NEW_MESSAGE', { conversation, messageOrReview: message })
 }
 
 module.exports = {

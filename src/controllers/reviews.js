@@ -1,6 +1,7 @@
 const Boom = require('boom')
 const Review = require('./../models/review')
 const Conversation = require('./../models/conversation')
+const bus = require('../bus')
 
 const ns = process.env.OAUTH_CLIENT_DOMAIN + '/reviews/'
 
@@ -27,6 +28,7 @@ async function save (request, reply) {
     { new: true, upsert: true }
   )
   reply(updated)
+  bus.emit('NEW_REVIEW', { conversation, messageOrReview: updated })
 }
 
 module.exports = {
