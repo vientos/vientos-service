@@ -3,6 +3,7 @@ const Hapi = require('hapi')
 const http2 = require('http2')
 const Bell = require('bell')
 const AuthCookie = require('hapi-auth-cookie')
+const Etagger = require('etagger')
 const mongoose = require('mongoose')
 const data = require('vientos-data')
 
@@ -32,7 +33,7 @@ const server = new Hapi.Server()
 
 const connectionOptions = {
   port: PORT,
-  routes: { cors: { credentials: true, exposedHeaders: ['location'] } },
+  routes: { cors: { credentials: true, exposedHeaders: ['etag'] } },
   state: { isSameSite: false } // required for CORS
 }
 if (httpServerOptions.key && httpServerOptions.cert) {
@@ -41,7 +42,11 @@ if (httpServerOptions.key && httpServerOptions.cert) {
 server.connection(connectionOptions)
 
 const AuthRoutes = require('./routes/auth')
-server.register([AuthCookie, Bell], (err) => {
+server.register([
+  AuthCookie,
+  Bell,
+  { register: Etagger, options: { enabled: true } }
+], (err) => {
   if (err) throw err
 
   const IS_SECURE = NODE_ENV !== 'development'

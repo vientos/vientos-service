@@ -6,7 +6,7 @@ const bus = require('../bus')
 const ns = process.env.OAUTH_CLIENT_DOMAIN + '/reviews/'
 
 async function list (request, reply) {
-  reply(await Review.find({}))
+  reply(await Review.find({}).sort({ createdAt: -1 }))
 }
 
 async function save (request, reply) {
@@ -25,7 +25,7 @@ async function save (request, reply) {
   let updated = await Review.findByIdAndUpdate(
     ns + request.params.id,
     request.payload,
-    { new: true, upsert: true }
+    { new: true, upsert: true, setDefaultsOnInsert: true  }
   )
   reply(updated)
   bus.emit('NEW_REVIEW', { conversation, messageOrReview: updated })

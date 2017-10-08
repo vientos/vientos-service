@@ -27,7 +27,7 @@ async function save (request, reply) {
   let updated = await Person.findByIdAndUpdate(
     request.auth.credentials.id,
     request.payload,
-    { new: true, upsert: true }
+    { new: true, upsert: true, setDefaultsOnInsert: true  }
   )
   reply(updated)
 }
