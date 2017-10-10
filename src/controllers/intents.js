@@ -1,6 +1,7 @@
 const Boom = require('boom')
 const Project = require('./../models/project')
 const Intent = require('./../models/intent')
+const bus = require('../bus')
 
 const ns = process.env.OAUTH_CLIENT_DOMAIN + '/intents/'
 
@@ -27,6 +28,7 @@ async function save (request, reply) {
     { new: true, upsert: true, setDefaultsOnInsert: true }
   )
   reply(updated)
+  bus.emit('update', updated._doc)
 }
 
 module.exports = {

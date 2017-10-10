@@ -1,5 +1,7 @@
 const Boom = require('boom')
 const Project = require('./../models/project')
+const bus = require('../bus')
+
 const ns = process.env.OAUTH_CLIENT_DOMAIN + '/projects/'
 
 function canCreateOrUpdate (project, personId) {
@@ -25,6 +27,7 @@ async function save (request, reply) {
     { new: true, upsert: true, setDefaultsOnInsert: true }
   )
   reply(updated)
+  bus.emit('update', updated._doc)
 }
 
 module.exports = {

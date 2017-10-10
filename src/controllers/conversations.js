@@ -27,7 +27,7 @@ async function create (request, reply) {
   if (!valid) return reply(Boom.badData())
   let conversation = await Conversation.create(request.payload)
   reply(conversation)
-  bus.emit('NEW_CONVERSATION', { conversation })
+  bus.emit('update', conversation)
 }
 
 async function addMessage (request, reply) {
@@ -39,7 +39,7 @@ async function addMessage (request, reply) {
   if (!authorized) return reply(Boom.forbidden())
   let message = await conversation.addMessage(request.payload)
   reply(message)
-  bus.emit('NEW_MESSAGE', { conversation, messageOrReview: message })
+  bus.emit('update', message._doc)
 }
 
 module.exports = {

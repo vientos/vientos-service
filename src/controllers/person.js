@@ -1,5 +1,6 @@
 const Boom = require('boom')
 const Person = require('./../models/person')
+const bus = require('../bus')
 
 const ns = process.env.OAUTH_CLIENT_DOMAIN + '/people/'
 const relatedNs = {
@@ -27,9 +28,10 @@ async function save (request, reply) {
   let updated = await Person.findByIdAndUpdate(
     request.auth.credentials.id,
     request.payload,
-    { new: true, upsert: true, setDefaultsOnInsert: true  }
+    { new: true, upsert: true, setDefaultsOnInsert: true }
   )
   reply(updated)
+  bus.emit('update', updated.getPublicProfile())
 }
 
 async function addQualifiedRelation (collectionName, propertyName, request, reply) {

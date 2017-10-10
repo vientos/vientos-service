@@ -9,6 +9,7 @@ const data = require('vientos-data')
 
 const bus = require('./bus')
 const notifierHandler = require('./notifier')
+bus.on('update', notifierHandler)
 
 const vientosProvider = require('./vientosProvider')
 if (process.env.SENTRY_DSN) {
@@ -33,7 +34,7 @@ const server = new Hapi.Server()
 
 const connectionOptions = {
   port: PORT,
-  routes: { cors: { credentials: true, exposedHeaders: ['etag'] } },
+  routes: { cors: { credentials: true, exposedHeaders: ['etag', 'last-event-id'] } },
   state: { isSameSite: false } // required for CORS
 }
 if (httpServerOptions.key && httpServerOptions.cert) {
@@ -138,6 +139,7 @@ server.route(require('./routes/conversations'))
 server.route(require('./routes/reviews'))
 server.route(require('./routes/notifications'))
 server.route(require('./routes/places'))
+server.route(require('./routes/updates'))
 
 server.route({
   method: 'GET',
@@ -156,11 +158,6 @@ server.route({
     auth: false
   }
 })
-
-// events bus
-bus.on('NEW_CONVERSATION', notifierHandler)
-bus.on('NEW_MESSAGE', notifierHandler)
-bus.on('NEW_REVIEW', notifierHandler)
 
 // don't start if required from other script
 if (!module.parent) {

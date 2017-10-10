@@ -2,8 +2,11 @@ const cuid = require('cuid')
 const labels = require('vientos-data').labels
 
 const Notification = require('./models/notification')
+const Conversation = require('./models/conversation')
 const Intent = require('./models/intent')
 const Person = require('./models/person')
+
+const bus = require('./bus')
 
 const Mailjet = require('node-mailjet').connect(
   process.env.MAILJET_APIKEY_PUBLIC,
@@ -46,10 +49,18 @@ async function selectRecipients (conversation, messageOrReview) {
   return recipients
 }
 
-async function handleAction (action) {
-  let recipientsIds = await selectRecipients(action.conversation, action.messageOrReview)
+async function handleUpdate (entity) {
+  let conversation
+  let messageOrReview
+  if (entity.type === 'Conversaion') {
+    conversation = entity
+  } else if (entity.type === 'Message' || entity.type === 'Review') {
+    messageOrReview = entity
+    conversation = await Conversation.findById(messageOrReview.conversation)
+  } else return
+  let recipientsIds = await selectRecipients(conversation, messageOrReview)
   let recipients = await Person.find({_id: {$in: recipientsIds}})
-  return Promise.all(recipients.map(person => notify(person, action.conversation, action.messageOrReview)))
+  return Promise.all(recipients.map(person => notify(person, conversation, messageOrReview)))
 }
 
 // delivery
@@ -63,6 +74,7 @@ async function notify (person, conversation, message) {
   })
   if (message) notification.cause = message._id
   await notification.save()
+  bus.emit('notification', notification._doc)
   let push
   if (person.subscriptions.length) {
     let body = subjectForNotification(notification, message, person.language)
@@ -103,4 +115,4 @@ function sendEmailNotification (person, notification, message) {
   return Mailjet.post('send').request(emailData)
 }
 
-module.exports = handleAction
+module.exports = handleUpdate

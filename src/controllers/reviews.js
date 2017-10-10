@@ -25,10 +25,10 @@ async function save (request, reply) {
   let updated = await Review.findByIdAndUpdate(
     ns + request.params.id,
     request.payload,
-    { new: true, upsert: true, setDefaultsOnInsert: true  }
+    { new: true, upsert: true, setDefaultsOnInsert: true }
   )
   reply(updated)
-  bus.emit('NEW_REVIEW', { conversation, messageOrReview: updated })
+  bus.emit('update', updated)
 }
 
 module.exports = {

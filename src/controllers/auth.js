@@ -2,6 +2,7 @@ const crypto = require('crypto')
 const cuid = require('cuid')
 const Boom = require('boom')
 const Person = require('./../models/person')
+const bus = require('../bus')
 
 const PWA_URL = process.env.PWA_URL || 'http://localhost:8080'
 
@@ -27,6 +28,7 @@ async function oauth (request, reply) {
       logo: `https://robohash.org/${emailHash}?set=set4`,
       credentials: [credential]
     }).save()
+    bus.emit('update', person.getPublicProfile())
   }
   request.cookieAuth.set({
     id: person._id,
