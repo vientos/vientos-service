@@ -27,7 +27,7 @@ async function create (request, reply) {
   if (!valid) return reply(Boom.badData())
   let conversation = await Conversation.create(request.payload)
   reply(conversation)
-  bus.emit('update', conversation)
+  bus.emit('update', conversation._doc)
 }
 
 async function addMessage (request, reply) {

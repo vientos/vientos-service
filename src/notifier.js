@@ -52,7 +52,7 @@ async function selectRecipients (conversation, messageOrReview) {
 async function handleUpdate (entity) {
   let conversation
   let messageOrReview
-  if (entity.type === 'Conversaion') {
+  if (entity.type === 'Conversation') {
     conversation = entity
   } else if (entity.type === 'Message' || entity.type === 'Review') {
     messageOrReview = entity

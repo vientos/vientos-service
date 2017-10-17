@@ -28,7 +28,7 @@ async function save (request, reply) {
     { new: true, upsert: true, setDefaultsOnInsert: true }
   )
   reply(updated)
-  bus.emit('update', updated)
+  bus.emit('update', updated._doc)
 }
 
 module.exports = {
