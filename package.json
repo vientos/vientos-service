@@ -23,7 +23,7 @@
     "node-mailjet": "^3.1.0",
     "raven": "^2.1.0",
     "sse-channel": "^2.0.6",
-    "vientos-data": "https://github.com/vientos/vientos-data.git#0.1.9",
+    "vientos-data": "https://github.com/vientos/vientos-data.git#0.2.0",
     "web-push": "^3.2.2"
   },
   "devDependencies": {

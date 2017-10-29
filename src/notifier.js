@@ -1,5 +1,5 @@
 const cuid = require('cuid')
-const labels = require('vientos-data').labels
+const labels = require('vientos-data').labels.service
 
 const Notification = require('./models/notification')
 const Conversation = require('./models/conversation')

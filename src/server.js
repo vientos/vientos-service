@@ -5,7 +5,7 @@ const Bell = require('bell')
 const AuthCookie = require('hapi-auth-cookie')
 const Etagger = require('etagger')
 const mongoose = require('mongoose')
-const data = require('vientos-data')
+const categories = require('vientos-data').categories
 
 const bus = require('./bus')
 const notifierHandler = require('./notifier')
@@ -143,18 +143,9 @@ server.route(require('./routes/updates'))
 
 server.route({
   method: 'GET',
-  path: '/labels',
-  config: {
-    handler: (request, reply) => reply(data.labels),
-    auth: false
-  }
-})
-
-server.route({
-  method: 'GET',
   path: '/categories',
   config: {
-    handler: (request, reply) => reply(data.categories),
+    handler: (request, reply) => reply(categories),
     auth: false
   }
 })
