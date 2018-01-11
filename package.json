@@ -4,7 +4,7 @@
   "description": "",
   "main": "src/server.js",
   "scripts": {
-    "start": "gulp",
+    "start": "nodemon --inspect dev-server.js",
     "test": "standard && istanbul cover ./node_modules/mocha/bin/_mocha --report lcovonly"
   },
   "author": "",
@@ -29,11 +29,15 @@
   "devDependencies": {
     "babel-eslint": "^8.0.1",
     "chai": "^3.5.0",
-    "gulp": "^3.9.1",
-    "gulp-develop-server": "^0.5.2",
     "istanbul": "^0.4.5",
     "mocha": "^3.2.0",
+    "nodemon": "^1.14.11",
     "sinon": "^1.17.7",
     "standard": "^8.6.0"
+  },
+  "nodemonConfig": {
+    "watch": [
+      "src"
+    ]
   }
 }
