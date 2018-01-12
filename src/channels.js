@@ -5,7 +5,7 @@ const cuid = require('cuid')
 const privateChannels = {}
 const publicChannel = new SseChannel({ cors: { origins: ['*'] } })
 
-const publicTypes = ['Person', 'Project', 'Intent', 'Place', 'Review']
+const publicTypes = ['Person', 'Project', 'Intent', 'Place', 'Review', 'Matching'] // TODO: make Matching private
 
 bus.on('update', entity => {
   if (publicTypes.includes(entity.type)) {

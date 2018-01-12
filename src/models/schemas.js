@@ -51,6 +51,13 @@ const credential = new Mongoose.Schema({
   provider: { type: String }
 })
 
+const matching = new Mongoose.Schema({
+  _id: { type: String },
+  type: { type: String, default: 'Matching' },
+  creator: { type: String, ref: 'Person' },
+  intents: [{ type: String, ref: 'Intent' }]
+})
+
 const following = new Mongoose.Schema({
   _id: { type: String },
   type: { type: String, default: 'Following' },
@@ -136,6 +143,7 @@ module.exports = {
   project,
   intent,
   credential,
+  matching,
   following,
   favoring,
   subscription,
