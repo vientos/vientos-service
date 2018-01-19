@@ -19,7 +19,7 @@ module.exports = [
     method: 'PUT',
     path: '/conversations/{id}',
     config: {
-      handler: ConversationsController.create
+      handler: ConversationsController.save
     }
   },
   {

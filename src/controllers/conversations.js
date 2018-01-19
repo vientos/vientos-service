@@ -22,12 +22,24 @@ async function mine (request, reply) {
 
 // TODO if open conversation with same creator, cousing and matching intent, dont
 // TODO check if causing and matching exist and are active, in the db
-async function create (request, reply) {
-  let valid = request.payload.creator === request.auth.credentials.id && request.payload.causingIntent
+async function save (request, reply) {
+  let conversation = await Conversation.findById(request.payload._id)
+  let valid = request.payload._id === ns + request.params.id
+  valid = valid && request.payload.causingIntent
+  if (!conversation) {
+    valid = valid && request.payload.creator === request.auth.credentials.id
+  } else {
+    // TODO: ensure only matchingIntent has changed
+    // valid = valid && deepEqual(conversation._doc, request.payload)
+  }
   if (!valid) return reply(Boom.badData())
-  let conversation = await Conversation.create(request.payload)
-  reply(conversation)
-  bus.emit('update', conversation._doc)
+  let updated = await Conversation.findByIdAndUpdate(
+    ns + request.params.id,
+    request.payload,
+    { new: true, upsert: true, setDefaultsOnInsert: true }
+  )
+  reply(updated)
+  bus.emit('update', updated._doc)
 }
 
 async function addMessage (request, reply) {
@@ -45,6 +57,6 @@ async function addMessage (request, reply) {
 module.exports = {
   view,
   mine,
-  create,
+  save,
   addMessage
 }
