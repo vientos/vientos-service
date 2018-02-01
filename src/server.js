@@ -70,7 +70,7 @@ server.register([
     password: COOKIE_PASSWORD,
     isSecure: IS_SECURE,
     keepAlive: true,
-    ttl: 7 * 24 * 60 * 60 * 1000 // 7 days
+    ttl: 30 * 24 * 60 * 60 * 1000 // 30 days
   })
 
   if (availableLoginProviders.google) {
