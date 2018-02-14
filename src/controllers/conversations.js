@@ -1,122 +1,62 @@
 const Boom = require('boom')
 const Conversation = require('./../models/conversation')
+const bus = require('../bus')
 
 const ns = process.env.OAUTH_CLIENT_DOMAIN + '/conversations/'
 const peopleNs = process.env.OAUTH_CLIENT_DOMAIN + '/people/'
-const collaborationsNs = process.env.OAUTH_CLIENT_DOMAIN + '/collaborations/'
 
-function view (request, reply) {
-  Conversation.findById(ns + request.params.id)
-    .then(conversation => {
-      if (!conversation) return reply(Boom.notFound())
-      conversation.canEngage(request.auth.credentials.id)
-        .then(allowed => {
-          if (allowed) reply(conversation)
-          else reply(Boom.forbidden())
-        }
-      )
-    }).catch(err => { throw err })
+async function view (request, reply) {
+  let conversation = await Conversation.findById(ns + request.params.id)
+  if (!conversation) return reply(Boom.notFound())
+  let authorized = await conversation.canEngage(request.auth.credentials.id)
+  if (!authorized) return reply(Boom.forbidden())
+  reply(conversation)
 }
 
 // TODO optimize when loooots of conversations
-function mine (request, reply) {
-  if (peopleNs + request.params.id !== request.auth.credentials.id) return reply(Boom.forbidden())
-  Conversation.findByPersonCanEngage(request.auth.credentials.id)
-    .then(conversations => reply(conversations))
-    .catch(err => { throw err })
-}
-
-function listCollaborations (request, reply) {
-  Conversation.find({})
-    .then(conversations => {
-      let collaborations = conversations.filter(conversation => {
-        return conversation.collaboration
-      }).map(conversation => conversation.collaboration)
-      reply(collaborations)
-    }).catch(err => { throw err })
-}
-
-function listReviews (request, reply) {
-  Conversation.find({})
-    .then(conversations => {
-      let reviews = conversations.reduce((acc, conversation) => {
-        return acc.concat(conversation.reviews)
-      }, [])
-      reply(reviews)
-    }).catch(err => { throw err })
+async function mine (request, reply) {
+  let authorized = peopleNs + request.params.id === request.auth.credentials.id
+  if (!authorized) return reply(Boom.forbidden())
+  reply(await Conversation.findByPersonCanEngage(request.auth.credentials.id))
 }
 
 // TODO if open conversation with same creator, cousing and matching intent, dont
 // TODO check if causing and matching exist and are active, in the db
-function create (request, reply) {
-  if (request.payload.creator !== request.auth.credentials.id || !request.payload.causingIntent) return reply(Boom.badData())
-  Conversation.createAndAddBacklinks(request.payload)
-    .then(conversation => reply(conversation))
-    .catch(err => { throw err })
+async function save (request, reply) {
+  let conversation = await Conversation.findById(request.payload._id)
+  let valid = request.payload._id === ns + request.params.id
+  valid = valid && request.payload.causingIntent
+  if (!conversation) {
+    valid = valid && request.payload.creator === request.auth.credentials.id
+  } else {
+    // TODO: ensure only matchingIntent has changed
+    // valid = valid && deepEqual(conversation._doc, request.payload)
+  }
+  if (!valid) return reply(Boom.badData())
+  let updated = await Conversation.findByIdAndUpdate(
+    ns + request.params.id,
+    request.payload,
+    { new: true, upsert: true, setDefaultsOnInsert: true }
+  )
+  reply(updated)
+  bus.emit('update', updated._doc)
 }
 
-function addMessage (request, reply) {
-  if (request.payload.creator !== request.auth.credentials.id) return reply(Boom.badData())
-  Conversation.findById(request.payload.conversation)
-    .then(conversation => {
-      if (!conversation) return reply(Boom.badData())
-      conversation.canEngage(request.auth.credentials.id)
-        .then(allowed => {
-          if (!allowed) return reply(Boom.forbidden())
-          return conversation.addMessage(request.payload)
-        }).then(message => reply(message))
-    }).catch(err => { throw err })
-}
-
-function addReview (request, reply) {
-  if (request.payload.creator !== request.auth.credentials.id) return reply(Boom.badData())
-  Conversation.findById(request.payload.conversation)
-    .then(conversation => {
-      if (!conversation) return reply(Boom.badData())
-      conversation.canEngage(request.auth.credentials.id)
-        .then(allowed => {
-          if (!allowed) return reply(Boom.forbidden())
-          // TODO make sure not already reviewed
-          return conversation.addReview(request.payload)
-        }).then(review => reply(review))
-    }).catch(err => { throw err })
-}
-
-function saveCollaboration (request, reply) {
-  Conversation.findById(request.payload.conversation)
-    .then(conversation => {
-      if (!conversation) return reply(Boom.badData())
-      if (conversation.reviews.length > 0) return reply(Boom.illegal())
-      conversation.canEngage(request.auth.credentials.id)
-        .then(allowed => {
-          if (!allowed) return reply(Boom.forbidden())
-          // TODO make sure not already reviewed
-          return conversation.saveCollaboration(request.payload)
-        }).then(collaboration => reply(collaboration))
-    }).catch(err => { throw err })
-}
-
-function removeCollaboration (request, reply) {
-  Conversation.findOne({ 'collaboration._id': collaborationsNs + request.params.id })
-    .then(conversation => {
-      if (!conversation) return reply(Boom.badData())
-      if (conversation.reviews.length > 0) return reply(Boom.illegal())
-      conversation.canEngage(request.auth.credentials.id)
-        .then(allowed => {
-          if (!allowed) return reply(Boom.forbidden())
-          return conversation.removeCollaboration(request.payload)
-        }).then(() => reply().code(204))
-    }).catch(err => { throw err })
+async function addMessage (request, reply) {
+  let valid = request.payload.creator === request.auth.credentials.id
+  if (!valid) return reply(Boom.badData())
+  let conversation = await Conversation.findById(request.payload.conversation)
+  if (!conversation) return reply(Boom.badData())
+  let authorized = await conversation.canEngage(request.auth.credentials.id)
+  if (!authorized) return reply(Boom.forbidden())
+  let message = await conversation.addMessage(request.payload)
+  reply(message)
+  bus.emit('update', message._doc)
 }
 
 module.exports = {
   view,
   mine,
-  create,
-  addMessage,
-  listReviews,
-  addReview,
-  listCollaborations,
-  saveCollaboration,
-  removeCollaboration
+  save,
+  addMessage
 }

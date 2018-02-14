@@ -19,7 +19,7 @@ module.exports = [
     method: 'PUT',
     path: '/conversations/{id}',
     config: {
-      handler: ConversationsController.create
+      handler: ConversationsController.save
     }
   },
   {
@@ -28,42 +28,4 @@ module.exports = [
     config: {
       handler: ConversationsController.addMessage
     }
-  },
-  {
-    method: 'GET',
-    path: '/reviews',
-    config: {
-      handler: ConversationsController.listReviews,
-      auth: false
-    }
-  },
-  {
-    method: 'PUT',
-    path: '/reviews/{id}',
-    config: {
-      handler: ConversationsController.addReview
-    }
-  },
-  {
-    method: 'GET',
-    path: '/collaborations',
-    config: {
-      handler: ConversationsController.listCollaborations,
-      auth: false
-    }
-  },
-  {
-    method: 'PUT',
-    path: '/collaborations/{id}',
-    config: {
-      handler: ConversationsController.saveCollaboration
-    }
-  },
-  {
-    method: 'DELETE',
-    path: '/collaborations/{id}',
-    config: {
-      handler: ConversationsController.removeCollaboration
-    }
-  }
-]
+  }]

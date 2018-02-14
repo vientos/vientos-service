@@ -26,11 +26,3 @@ module.exports.vientos = {
     handler: AuthController.oauth
   }
 }
-
-module.exports.hello = {
-  method: 'GET',
-  path: '/auth/hello',
-  config: {
-    handler: AuthController.hello
-  }
-}

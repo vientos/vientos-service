@@ -30,7 +30,7 @@ const intent = new Mongoose.Schema({
   description: { type: String },
   question: { type: String },
   logo: { type: String },
-  status: { type: String, default: 'active' },
+  status: { type: String, default: 'active' }, // active | inactive
   direction: { type: String }, // offer || request
   collaborationType: { type: String }, // work || usage || consumption || ownership
   reciprocity: { type: String }, // gift || barter, time-exchange, trade
@@ -39,11 +39,7 @@ const intent = new Mongoose.Schema({
   creator: { type: String, ref: 'Person' },
   locations: [{ type: String, ref: 'Place' }],
   projects: [{ type: String, ref: 'Project' }],
-  admins: [{ type: String, ref: 'Person' }],
-  openConversations: [{ type: String, ref: 'Conversation' }],
-  abortedConversations: [{ type: String, ref: 'Conversation' }],
-  successfulConversations: [{ type: String, ref: 'Conversation' }]
-  // collaborations: [{ type: String, ref: 'Collaboration' }]
+  admins: [{ type: String, ref: 'Person' }]
 })
 
 const credential = new Mongoose.Schema({
@@ -53,6 +49,13 @@ const credential = new Mongoose.Schema({
   id: { type: String },
   email: { type: String },
   provider: { type: String }
+})
+
+const matching = new Mongoose.Schema({
+  _id: { type: String },
+  type: { type: String, default: 'Matching' },
+  creator: { type: String, ref: 'Person' },
+  intents: [{ type: String, ref: 'Intent' }]
 })
 
 const following = new Mongoose.Schema({
@@ -110,15 +113,9 @@ const review = new Mongoose.Schema({
   createdAt: { type: Date, default: Date.now },
   creator: { type: String, ref: 'Person' },
   conversation: { type: String, ref: 'Conversation' },
-  // collaboration: { type: String, ref: 'Collaboration' }
+  causingIntent: { type: String, ref: 'Intent' },
+  matchingIntent: { type: String, ref: 'Intent' },
   success: { type: Boolean, default: false }
-})
-
-const collaboration = new Mongoose.Schema({
-  _id: { type: String },
-  type: { type: String, default: 'Collaboration' },
-  body: { type: String },
-  conversation: { type: String, ref: 'Conversation' }
 })
 
 const conversation = new Mongoose.Schema({
@@ -128,9 +125,7 @@ const conversation = new Mongoose.Schema({
   creator: { type: String, ref: 'Person' },
   causingIntent: { type: String, ref: 'Intent' },
   matchingIntent: { type: String, ref: 'Intent' },
-  collaboration: collaboration,
-  messages: [message],
-  reviews: [review]
+  messages: [message]
 })
 
 const notification = new Mongoose.Schema({
@@ -148,13 +143,13 @@ module.exports = {
   project,
   intent,
   credential,
+  matching,
   following,
   favoring,
   subscription,
   person,
   message,
   review,
-  collaboration,
   conversation,
   notification
 }

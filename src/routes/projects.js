@@ -10,14 +10,6 @@ module.exports = [
     }
   },
   {
-    method: 'GET',
-    path: '/projects/{projectId}',
-    config: {
-      handler: ProjectsController.view,
-      auth: false
-    }
-  },
-  {
     method: 'PUT',
     path: '/projects/{projectId}',
     config: {

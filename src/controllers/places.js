@@ -1,15 +1,14 @@
 const Place = require('./../models/place')
+const bus = require('../bus')
 
-function list (request, reply) {
-  Place.find({})
-    .then(places => reply(places))
-    .catch(err => { throw err })
+async function list (request, reply) {
+  reply(await Place.find({}))
 }
 
-function save (request, reply) {
-  Place.create(request.payload)
-    .then(place => reply(place))
-    .catch(err => { throw err })
+async function save (request, reply) {
+  const place = await Place.create(request.payload)
+  reply(place)
+  bus.emit('update', place._doc)
 }
 
 module.exports = {

@@ -10,25 +10,10 @@ module.exports = [
     }
   },
   {
-    method: 'GET',
-    path: '/intents/{intentId}',
-    config: {
-      handler: IntentsController.view,
-      auth: false
-    }
-  },
-  {
     method: 'PUT',
     path: '/intents/{intentId}',
     config: {
       handler: IntentsController.save
-    }
-  },
-  {
-    method: 'DELETE',
-    path: '/intents/{intentId}',
-    config: {
-      handler: IntentsController.remove
     }
   }
 ]
