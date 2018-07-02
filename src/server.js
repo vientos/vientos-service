@@ -1,6 +1,4 @@
-const fs = require('fs')
 const Hapi = require('hapi')
-const http2 = require('http2')
 const Bell = require('bell')
 const AuthCookie = require('hapi-auth-cookie')
 const Etagger = require('etagger')
@@ -16,11 +14,6 @@ if (process.env.SENTRY_DSN) {
   require('raven').config(process.env.SENTRY_DSN).install()
 }
 
-const httpServerOptions = {}
-if (process.env.TLS_KEY_PATH && process.env.TLS_CERT_PATH) {
-  httpServerOptions.key = fs.readFileSync(process.env.TLS_KEY_PATH)
-  httpServerOptions.cert = fs.readFileSync(process.env.TLS_CERT_PATH)
-}
 const PORT = process.env.HAPI_PORT || 3000
 const COOKIE_PASSWORD = process.env.COOKIE_PASSWORD || 'it-should-have-min-32-characters'
 const NODE_ENV = process.env.NODE_ENV || 'development'
@@ -36,9 +29,6 @@ const connectionOptions = {
   port: PORT,
   routes: { cors: { credentials: true, exposedHeaders: ['etag', 'last-event-id'] } },
   state: { isSameSite: false } // required for CORS
-}
-if (httpServerOptions.key && httpServerOptions.cert) {
-  connectionOptions.listener = http2.createServer(httpServerOptions)
 }
 server.connection(connectionOptions)
 
