@@ -16,7 +16,7 @@ async function save (request, reply) {
   let updated = await Notification.findByIdAndUpdate(
     ns + request.params.id,
     request.payload,
-    { new: true, upsert: true, setDefaultsOnInsert: true  }
+    { new: true, upsert: true, setDefaultsOnInsert: true }
   )
   return reply(updated)
 }
