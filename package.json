@@ -19,7 +19,7 @@
     "hoek": "^4.1.1",
     "http2": "^3.3.6",
     "joi": "^10.5.0",
-    "mongoose": "^4.7.9",
+    "mongoose": "^5.1.7",
     "node-mailjet": "^3.1.0",
     "raven": "^2.1.0",
     "sse-channel": "^2.0.6",
