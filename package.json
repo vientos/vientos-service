@@ -5,7 +5,7 @@
   "main": "src/server.js",
   "scripts": {
     "start": "nodemon --inspect dev-server.js",
-    "test": "standard && istanbul cover ./node_modules/mocha/bin/_mocha --report lcovonly"
+    "test": "standard"
   },
   "author": "",
   "license": "Unlicense",
@@ -28,11 +28,7 @@
   },
   "devDependencies": {
     "babel-eslint": "^8.0.1",
-    "chai": "^3.5.0",
-    "istanbul": "^0.4.5",
-    "mocha": "^3.2.0",
     "nodemon": "^1.14.11",
-    "sinon": "^1.17.7",
     "standard": "^8.6.0"
   },
   "nodemonConfig": {
