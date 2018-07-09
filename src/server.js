@@ -14,11 +14,11 @@ if (process.env.SENTRY_DSN) {
   require('raven').config(process.env.SENTRY_DSN).install()
 }
 
-const PORT = process.env.HAPI_PORT || 3000
+const PORT = process.env.PORT || 3000
 const COOKIE_PASSWORD = process.env.COOKIE_PASSWORD || 'it-should-have-min-32-characters'
 const NODE_ENV = process.env.NODE_ENV || 'development'
 const MONGO_URL = process.env.MONGO_URL || 'mongodb://localhost:27017'
-const domain = process.env.OAUTH_CLIENT_DOMAIN || 'http://localhost:3000'
+const domain = process.env.SERVICE_URL || 'http://localhost:3000'
 
 mongoose.Promise = global.Promise
 mongoose.connect(MONGO_URL, { promiseLibrary: global.Promise })
@@ -50,9 +50,9 @@ server.register([
     process.env.FACEBOOK_CLIENT_SECRET) {
     availableLoginProviders.facebook = domain + '/auth/facebook'
   }
-  if (process.env.VIENTOS_IDP_URL &&
-    process.env.VIENTOS_CLIENT_ID &&
-    process.env.VIENTOS_CLIENT_SECRET) {
+  if (process.env.IDP_URL &&
+    process.env.IDP_CLIENT_ID &&
+    process.env.IDP_CLIENT_SECRET) {
     availableLoginProviders.vientos = domain + '/auth/vientos'
   }
 
@@ -69,7 +69,7 @@ server.register([
       password: COOKIE_PASSWORD,
       clientId: process.env.GOOGLE_CLIENT_ID,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-      location: process.env.OAUTH_CLIENT_DOMAIN,
+      location: process.env.SERVICE_URL,
       isSecure: IS_SECURE
     })
     server.route(AuthRoutes.google)
@@ -81,7 +81,7 @@ server.register([
       password: COOKIE_PASSWORD,
       clientId: process.env.FACEBOOK_CLIENT_ID,
       clientSecret: process.env.FACEBOOK_CLIENT_SECRET,
-      location: process.env.OAUTH_CLIENT_DOMAIN,
+      location: process.env.SERVICE_URL,
       isSecure: IS_SECURE
     })
     server.route(AuthRoutes.facebook)
@@ -90,12 +90,12 @@ server.register([
   if (availableLoginProviders.vientos) {
     server.auth.strategy('vientos', 'bell', {
       provider: vientosProvider({
-        vientosIdpUrl: process.env.VIENTOS_IDP_URL
+        vientosIdpUrl: process.env.IDP_URL
       }),
       password: COOKIE_PASSWORD,
-      clientId: process.env.VIENTOS_CLIENT_ID,
-      clientSecret: process.env.VIENTOS_CLIENT_SECRET,
-      location: process.env.OAUTH_CLIENT_DOMAIN,
+      clientId: process.env.IDP_CLIENT_ID,
+      clientSecret: process.env.IDP_CLIENT_SECRET,
+      location: process.env.SERVICE_URL,
       isSecure: IS_SECURE
     })
     server.route(AuthRoutes.vientos)

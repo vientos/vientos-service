@@ -68,7 +68,7 @@ async function handleUpdate (entity) {
 async function notify (person, conversation, message) {
   let notification = new Notification({
     // FIXME define all namespaces in single place
-    _id: process.env.OAUTH_CLIENT_DOMAIN + '/notifications/' + cuid(),
+    _id: process.env.SERVICE_URL + '/notifications/' + cuid(),
     for: person._id,
     object: conversation._id
   })
@@ -109,7 +109,7 @@ function sendEmailNotification (person, notification, message) {
     Recipients: [{ Email: person.credentials[0].email }],
     Subject: 'Vientos - ' + subjectForNotification(notification, message, person.language),
     // TODO: decuple from app
-    'Text-part': process.env.PWA_URL + '/conversation/' +
+    'Text-part': process.env.APP_URL + '/conversation/' +
       notification.object.split('/').pop()
   }
   return Mailjet.post('send').request(emailData)

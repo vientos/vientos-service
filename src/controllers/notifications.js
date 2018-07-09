@@ -1,8 +1,8 @@
 const Boom = require('boom')
 const Notification = require('./../models/notification')
 
-const ns = process.env.OAUTH_CLIENT_DOMAIN + '/notifications/'
-const peopleNs = process.env.OAUTH_CLIENT_DOMAIN + '/people/'
+const ns = process.env.SERVICE_URL + '/notifications/'
+const peopleNs = process.env.SERVICE_URL + '/people/'
 
 /**
  * the service creates notifications so client only can save

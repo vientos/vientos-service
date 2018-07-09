@@ -17,7 +17,7 @@ async function states (request, reply) {
 }
 async function municipalities (request, reply) {
   reply(await Mongoose.connection.db.collection('municipalities').find({
-    state: `${process.env.OAUTH_CLIENT_DOMAIN}/places/${request.params.stateId}`
+    state: `${process.env.SERVICE_URL}/places/${request.params.stateId}`
   }).toArray())
 }
 

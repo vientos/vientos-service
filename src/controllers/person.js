@@ -2,10 +2,10 @@ const Boom = require('boom')
 const Person = require('./../models/person')
 const bus = require('../bus')
 
-const ns = process.env.OAUTH_CLIENT_DOMAIN + '/people/'
+const ns = process.env.SERVICE_URL + '/people/'
 const relatedNs = {
-  followings: process.env.OAUTH_CLIENT_DOMAIN + '/followings/',
-  favorings: process.env.OAUTH_CLIENT_DOMAIN + '/favorings/'
+  followings: process.env.SERVICE_URL + '/followings/',
+  favorings: process.env.SERVICE_URL + '/favorings/'
 }
 
 async function get (request, reply) {
