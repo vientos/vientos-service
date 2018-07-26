@@ -2,7 +2,7 @@ const Boom = require('boom')
 const Project = require('./../models/project')
 const bus = require('../bus')
 
-const ns = process.env.OAUTH_CLIENT_DOMAIN + '/projects/'
+const ns = process.env.SERVICE_URL + '/projects/'
 
 function canCreateOrUpdate (project, personId) {
   return project.admins.includes(personId)

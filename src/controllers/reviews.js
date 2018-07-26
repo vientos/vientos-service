@@ -3,7 +3,7 @@ const Review = require('./../models/review')
 const Conversation = require('./../models/conversation')
 const bus = require('../bus')
 
-const ns = process.env.OAUTH_CLIENT_DOMAIN + '/reviews/'
+const ns = process.env.SERVICE_URL + '/reviews/'
 
 async function list (request, reply) {
   reply(await Review.find({}).sort({ createdAt: -1 }))

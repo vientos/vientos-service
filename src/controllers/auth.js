@@ -4,7 +4,7 @@ const Boom = require('boom')
 const Person = require('./../models/person')
 const bus = require('../bus')
 
-const PWA_URL = process.env.PWA_URL || 'http://localhost:8080'
+const APP_URL = process.env.APP_URL || 'http://localhost:8080'
 
 async function oauth (request, reply) {
   if (!request.auth.isAuthenticated) return reply(Boom.unauthorized())
@@ -23,7 +23,7 @@ async function oauth (request, reply) {
   } else {
     let emailHash = crypto.createHash('md5').update(credential.email).digest('hex')
     person = await new Person({
-      _id: process.env.OAUTH_CLIENT_DOMAIN + '/people/' + cuid(),
+      _id: process.env.SERVICE_URL + '/people/' + cuid(),
       name: request.auth.credentials.profile.displayName,
       logo: `https://robohash.org/${emailHash}?set=set4`,
       credentials: [credential]
@@ -33,7 +33,7 @@ async function oauth (request, reply) {
   request.cookieAuth.set({
     id: person._id,
     sessionId: cuid() })
-  reply().redirect(PWA_URL)
+  reply().redirect(APP_URL)
 }
 
 module.exports = {

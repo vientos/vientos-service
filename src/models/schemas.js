@@ -6,7 +6,11 @@ const place = new Mongoose.Schema({
   address: { type: String },
   latitude: { type: Number },
   longitude: { type: Number },
-  googlePlaceId: { type: String }
+  googlePlaceId: { type: String },
+  state: { type: String },
+  municipality: { type: String },
+  bbox: { type: Object },
+  level: { type: String }
 })
 
 const project = new Mongoose.Schema({

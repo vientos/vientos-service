@@ -3,7 +3,7 @@ const Project = require('./../models/project')
 const Intent = require('./../models/intent')
 const bus = require('../bus')
 
-const ns = process.env.OAUTH_CLIENT_DOMAIN + '/intents/'
+const ns = process.env.SERVICE_URL + '/intents/'
 
 async function canCreateOrUpdate (intent, personId) {
   let projects = await Project.find({ _id: { $in: intent.projects }, admins: personId })

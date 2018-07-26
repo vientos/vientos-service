@@ -1,6 +1,6 @@
 const Boom = require('boom')
 
-const ns = process.env.OAUTH_CLIENT_DOMAIN + '/sessions/'
+const ns = process.env.SERVICE_URL + '/sessions/'
 
 // TODO session model (non mongoose)
 function get (request, reply) {

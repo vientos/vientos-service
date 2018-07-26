@@ -1,8 +1,8 @@
 const Boom = require('boom')
 const Notification = require('./../models/notification')
 
-const ns = process.env.OAUTH_CLIENT_DOMAIN + '/notifications/'
-const peopleNs = process.env.OAUTH_CLIENT_DOMAIN + '/people/'
+const ns = process.env.SERVICE_URL + '/notifications/'
+const peopleNs = process.env.SERVICE_URL + '/people/'
 
 /**
  * the service creates notifications so client only can save
@@ -16,7 +16,7 @@ async function save (request, reply) {
   let updated = await Notification.findByIdAndUpdate(
     ns + request.params.id,
     request.payload,
-    { new: true, upsert: true, setDefaultsOnInsert: true  }
+    { new: true, upsert: true, setDefaultsOnInsert: true }
   )
   return reply(updated)
 }

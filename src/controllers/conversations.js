@@ -2,8 +2,8 @@ const Boom = require('boom')
 const Conversation = require('./../models/conversation')
 const bus = require('../bus')
 
-const ns = process.env.OAUTH_CLIENT_DOMAIN + '/conversations/'
-const peopleNs = process.env.OAUTH_CLIENT_DOMAIN + '/people/'
+const ns = process.env.SERVICE_URL + '/conversations/'
+const peopleNs = process.env.SERVICE_URL + '/people/'
 
 async function view (request, reply) {
   let conversation = await Conversation.findById(ns + request.params.id)

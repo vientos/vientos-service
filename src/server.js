@@ -1,6 +1,4 @@
-const fs = require('fs')
 const Hapi = require('hapi')
-const http2 = require('http2')
 const Bell = require('bell')
 const AuthCookie = require('hapi-auth-cookie')
 const Etagger = require('etagger')
@@ -16,16 +14,11 @@ if (process.env.SENTRY_DSN) {
   require('raven').config(process.env.SENTRY_DSN).install()
 }
 
-const httpServerOptions = {}
-if (process.env.TLS_KEY_PATH && process.env.TLS_CERT_PATH) {
-  httpServerOptions.key = fs.readFileSync(process.env.TLS_KEY_PATH)
-  httpServerOptions.cert = fs.readFileSync(process.env.TLS_CERT_PATH)
-}
-const PORT = process.env.HAPI_PORT || 3000
+const PORT = process.env.PORT || 3000
 const COOKIE_PASSWORD = process.env.COOKIE_PASSWORD || 'it-should-have-min-32-characters'
 const NODE_ENV = process.env.NODE_ENV || 'development'
 const MONGO_URL = process.env.MONGO_URL || 'mongodb://localhost:27017'
-const domain = process.env.OAUTH_CLIENT_DOMAIN || 'http://localhost:3000'
+const domain = process.env.SERVICE_URL || 'http://localhost:3000'
 
 mongoose.Promise = global.Promise
 mongoose.connect(MONGO_URL, { promiseLibrary: global.Promise })
@@ -36,9 +29,6 @@ const connectionOptions = {
   port: PORT,
   routes: { cors: { credentials: true, exposedHeaders: ['etag', 'last-event-id'] } },
   state: { isSameSite: false } // required for CORS
-}
-if (httpServerOptions.key && httpServerOptions.cert) {
-  connectionOptions.listener = http2.createServer(httpServerOptions)
 }
 server.connection(connectionOptions)
 
@@ -60,9 +50,9 @@ server.register([
     process.env.FACEBOOK_CLIENT_SECRET) {
     availableLoginProviders.facebook = domain + '/auth/facebook'
   }
-  if (process.env.VIENTOS_IDP_URL &&
-    process.env.VIENTOS_CLIENT_ID &&
-    process.env.VIENTOS_CLIENT_SECRET) {
+  if (process.env.IDP_URL &&
+    process.env.IDP_CLIENT_ID &&
+    process.env.IDP_CLIENT_SECRET) {
     availableLoginProviders.vientos = domain + '/auth/vientos'
   }
 
@@ -79,7 +69,7 @@ server.register([
       password: COOKIE_PASSWORD,
       clientId: process.env.GOOGLE_CLIENT_ID,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-      location: process.env.OAUTH_CLIENT_DOMAIN,
+      location: process.env.SERVICE_URL,
       isSecure: IS_SECURE
     })
     server.route(AuthRoutes.google)
@@ -91,7 +81,7 @@ server.register([
       password: COOKIE_PASSWORD,
       clientId: process.env.FACEBOOK_CLIENT_ID,
       clientSecret: process.env.FACEBOOK_CLIENT_SECRET,
-      location: process.env.OAUTH_CLIENT_DOMAIN,
+      location: process.env.SERVICE_URL,
       isSecure: IS_SECURE
     })
     server.route(AuthRoutes.facebook)
@@ -100,12 +90,12 @@ server.register([
   if (availableLoginProviders.vientos) {
     server.auth.strategy('vientos', 'bell', {
       provider: vientosProvider({
-        vientosIdpUrl: process.env.VIENTOS_IDP_URL
+        vientosIdpUrl: process.env.IDP_URL
       }),
       password: COOKIE_PASSWORD,
-      clientId: process.env.VIENTOS_CLIENT_ID,
-      clientSecret: process.env.VIENTOS_CLIENT_SECRET,
-      location: process.env.OAUTH_CLIENT_DOMAIN,
+      clientId: process.env.IDP_CLIENT_ID,
+      clientSecret: process.env.IDP_CLIENT_SECRET,
+      location: process.env.SERVICE_URL,
       isSecure: IS_SECURE
     })
     server.route(AuthRoutes.vientos)

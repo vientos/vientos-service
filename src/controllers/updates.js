@@ -1,7 +1,7 @@
 const Boom = require('boom')
 const subscribe = require('../channels')
 
-const peopleNs = process.env.OAUTH_CLIENT_DOMAIN + '/people/'
+const peopleNs = process.env.SERVICE_URL + '/people/'
 
 function publicChannel (request, reply) {
   subscribe(request.raw.req, request.raw.res)

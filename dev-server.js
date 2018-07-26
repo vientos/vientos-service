@@ -1,12 +1,12 @@
 const cuid = require('cuid')
 const server = require('./src/server')
 const Person = require('./src/models/person')
-const PWA_URL = process.env.PWA_URL || 'http://localhost:8080'
+const APP_URL = process.env.APP_URL || 'http://localhost:8080'
 
 const handler = function (request, reply) {
   let query = Person.findOne({})
   if (request.params.id) {
-    let iri = process.env.OAUTH_CLIENT_DOMAIN + '/people/' + request.params.id
+    let iri = process.env.SERVICE_URL + '/people/' + request.params.id
     query = Person.findOne({ _id: iri })
   }
   query.then(person => {
@@ -14,7 +14,7 @@ const handler = function (request, reply) {
       id: person._id,
       sessionId: cuid()
     })
-    reply().redirect(PWA_URL + '/me')
+    reply().redirect(APP_URL + '/me')
   })
 }
 
